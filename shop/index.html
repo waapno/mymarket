@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- ── Primary SEO ── -->
+  <title>MapShop — Premium Minecraft Maps</title>
+  <meta name="description" content="Buy premium handcrafted Minecraft maps. Unique worlds, survival challenges, adventure maps and more. Instant digital download via PayPal.">
+  <meta name="keywords" content="minecraft maps, minecraft map download, premium minecraft map, survival map, adventure map, minecraft world download">
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="waapno">
+  <link rel="canonical" href="https://waapno.github.io/mymarket/market">
+
+  <!-- ── Open Graph ── -->
+  <meta property="og:type"        content="website">
+  <meta property="og:url"         content="https://waapno.github.io/mymarket/market">
+  <meta property="og:title"       content="MapShop — Premium Minecraft Maps">
+  <meta property="og:description" content="Buy premium handcrafted Minecraft maps. Instant digital download via PayPal.">
+  <meta property="og:image"       content="https://waapno.github.io/mymarket/marketog-image.webp">
+  <meta property="og:locale"      content="en_US">
+  <meta property="og:site_name"   content="MapShop">
+
+  <!-- ── Twitter Card ── -->
+  <meta name="twitter:card"        content="summary_large_image">
+  <meta name="twitter:title"       content="MapShop — Premium Minecraft Maps">
+  <meta name="twitter:description" content="Buy premium handcrafted Minecraft maps. Instant digital download.">
+  <meta name="twitter:image"       content="https://waapno.github.io/mymarket/marketog-image.webp">
+
+  <!-- ── Theme ── -->
+  <meta name="theme-color" content="#00ff7f">
+  <meta name="msapplication-TileColor" content="#06090a">
+
+  <!-- ── Favicon ── -->
+  <link rel="icon"             href="favicon.ico"              type="image/x-icon">
+  <link rel="icon"             href="favicon.webp"             type="image/webp" sizes="any">
+  <link rel="icon"             href="favicon-32.png"           type="image/png" sizes="32x32">
+  <link rel="icon"             href="favicon-16.png"           type="image/png" sizes="16x16">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png"     sizes="180x180">
+  <link rel="manifest"         href="site.webmanifest">
+
+  <!-- ── JSON-LD Structured Data ── -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "MapShop",
+    "url": "https://waapno.github.io/mymarket/market",
+    "description": "Premium handcrafted Minecraft maps for download",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://waapno.github.io/mymarket/market?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
+  <script type="application/ld+json" id="ld-products">
+  {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "Minecraft Maps",
+    "itemListElement": []
+  }
+  </script>
+
+  <!-- ── Styles ── -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css">
+  <!-- Quill read-only rendering (no toolbar) -->
+  <link rel="stylesheet" href="https://cdn.quilljs.com/1.3.7/quill.snow.css">
+  <link rel="stylesheet" href="assets/css/shop.css">
+</head>
+<body>
+
+<canvas id="particles"></canvas>
+
+<!-- ======= Header ======= -->
+<header id="shop-header">
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-icon">🗺</div>
+      <div>
+        <div class="logo-text">MapShop</div>
+        <span class="logo-sub">Minecraft Maps</span>
+      </div>
+    </div>
+
+    <div class="search-wrap">
+      <i class="bi bi-search"></i>
+      <input type="text" id="search-input" placeholder="Search maps…" autocomplete="off">
+    </div>
+
+    <div class="header-right">
+      <a href="admin.html" class="btn-admin">
+        <i class="bi bi-shield-lock-fill"></i> Admin
+      </a>
+    </div>
+  </div>
+</header>
+
+<!-- ======= Hero ======= -->
+<section class="hero">
+  <p class="hero-eyebrow">✦ Premium Handcrafted</p>
+  <h1>Minecraft Maps<br><span>Built to Explore</span></h1>
+  <p class="hero-sub">Every map is carefully crafted, tested, and documented. Download once, play forever.</p>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <span class="hero-stat-n" id="stat-maps">—</span>
+      <span class="hero-stat-l">Maps</span>
+    </div>
+    <div class="hero-stat">
+      <span class="hero-stat-n" id="stat-tags">—</span>
+      <span class="hero-stat-l">Categories</span>
+    </div>
+    <div class="hero-stat">
+      <span class="hero-stat-n"><i class="bi bi-paypal" style="font-size:18px"></i></span>
+      <span class="hero-stat-l">Secure Checkout</span>
+    </div>
+  </div>
+</section>
+
+<!-- ======= Filters ======= -->
+<div class="filters-bar" id="filters-bar">
+  <button class="filter-btn active" data-filter="all">
+    <i class="bi bi-grid-3x3-gap-fill"></i> All Maps
+  </button>
+  <select class="sort-select" id="sort-select">
+    <option value="newest">Newest first</option>
+    <option value="oldest">Oldest first</option>
+    <option value="price-asc">Price: Low → High</option>
+    <option value="price-desc">Price: High → Low</option>
+    <option value="featured">Featured first</option>
+  </select>
+</div>
+
+<!-- ======= Products ======= -->
+<div class="products-section">
+  <div class="products-grid" id="products-grid">
+    <div class="skeleton"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line med"></div><div class="skeleton-line short"></div><div class="skeleton-line med"></div></div></div>
+    <div class="skeleton"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line med"></div><div class="skeleton-line short"></div><div class="skeleton-line med"></div></div></div>
+    <div class="skeleton"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line med"></div><div class="skeleton-line short"></div><div class="skeleton-line med"></div></div></div>
+  </div>
+</div>
+
+<!-- ======= Product Detail Modal ======= -->
+<div class="detail-overlay" id="detail-overlay">
+  <div class="detail-modal">
+    <button class="detail-close" id="detail-close"><i class="bi bi-x-lg"></i></button>
+
+    <!-- Gallery strip -->
+    <div class="detail-gallery" id="detail-gallery">
+      <!-- images injected by JS -->
+    </div>
+
+    <div class="detail-body">
+      <div class="detail-header">
+        <div class="detail-tags" id="detail-tags"></div>
+        <h2 class="detail-title" id="detail-title"></h2>
+        <div class="detail-badges" id="detail-badges"></div>
+      </div>
+
+      <!-- Full rich-text description rendered here -->
+      <div class="detail-desc ql-editor" id="detail-desc"></div>
+
+      <div class="detail-footer" id="detail-footer">
+        <!-- price + buy button injected -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======= Footer ======= -->
+<footer class="shop-footer">
+  <div class="footer-copy">
+    &copy; <span id="footer-year"></span>
+    <a href="#">MapShop</a> — Handcrafted Minecraft Maps
+  </div>
+  <div class="footer-pp">
+    Payments secured by <span class="pp-badge">PayPal</span>
+  </div>
+</footer>
+
+<div id="toast-container"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
+<script src="assets/js/shop.js"></script>
+</body>
+</html>

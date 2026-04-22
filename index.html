@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>waapno — Minecraft Developer &amp; Visual Artist</title>
+  <meta property="og:title" content="waapno" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://waapno.tk" />
+  <meta property="og:description" content="Minecraft server developer & visual artist. Servers, maps, photo/video editing." />
+  <meta name="theme-color" content="#00ff7f">
+  <link href="assets/img/favicon.ico" rel="icon">
+  <link href="assets/img/favicon.ico" rel="apple-touch-icon">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@300;400;600;700;800&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+  <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+  <link href="assets/vendor/remixicon/remixicon.css" rel="stylesheet">
+  <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+  <link href="assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+
+<canvas id="particles-canvas"></canvas>
+<div class="scanlines"></div>
+
+<!-- ======= Header ======= -->
+<header id="header">
+  <div class="container">
+
+    <div class="header-brand">
+      <div class="pixel-avatar">
+        <img src="assets/img/me.png" alt="waapno" class="avatar-img" onerror="this.style.display='none'">
+        <div class="avatar-glow"></div>
+      </div>
+      <div class="header-text">
+        <h1><a href="index.html"><span class="pixel-bracket">[</span>waapno<span class="pixel-bracket">]</span></a></h1>
+        <div class="header-badges">
+          <span class="badge-pill">⛏ Map Producer</span>
+          <span class="badge-pill">⚙ Server Configurator</span>
+          <span class="badge-pill badge-pill-cyan">🎨 Photo / Video Edit</span>
+          <span class="badge-pill badge-pill-cyan">🤖 AI Creation</span>
+        </div>
+        <h2 class="header-sub"><span data-i18n="header-sub">Minecraft Dev &amp; Visual Artist</span> <span class="cursor-blink">_</span></h2>
+      </div>
+    </div>
+
+    <nav id="navbar" class="navbar">
+      <ul>
+        <li><a class="nav-link active" href="#header" data-i18n="nav-home">🏠 Home</a></li>
+        <li><a class="nav-link" href="#about" data-i18n="nav-about">👤 About</a></li>
+        <li><a class="nav-link" href="#visual" data-i18n="nav-visual">🎨 Visual</a></li>
+        <li><a class="nav-link" href="#contact" data-i18n="nav-contact">📱 Contact</a></li>
+      </ul>
+      <button class="lang-toggle" id="lang-toggle-nav" title="Switch language">
+        <span class="lang-opt" data-l="en">EN</span>
+        <span class="lang-sep">|</span>
+        <span class="lang-opt" data-l="cs">CS</span>
+      </button>
+      <i class="bi bi-list mobile-nav-toggle"></i>
+    </nav>
+
+    <div class="header-actions">
+      <a href="shop" class="market-btn" target="_blank">
+        <span class="market-btn-icon">🛒</span>
+        <span class="market-btn-text">My Market</span>
+        <span class="market-btn-arrow">→</span>
+      </a>
+      <button class="lang-toggle" id="lang-toggle" title="Switch language">
+        <span class="lang-opt" data-l="en">EN</span>
+        <span class="lang-sep">|</span>
+        <span class="lang-opt" data-l="cs">CS</span>
+      </button>
+    </div>
+
+    <div class="social-links">
+      <div class="discord-wrapper">
+        <a href="#" class="discord discord-trigger" id="discord-trigger-header" title="Discord" style="width: 50px">
+          <i class="bi bi-discord"></i>
+        </a>
+        <div class="discord-popup" id="discord-popup-header">
+          <div class="discord-popup-arrow"></div>
+          <div class="discord-popup-inner">
+            <i class="bi bi-discord discord-popup-icon"></i>
+            <div class="discord-popup-info">
+              <span class="discord-popup-label">Discord</span>
+              <span class="discord-popup-username">waapno#5250</span>
+            </div>
+            <button class="discord-popup-copy" id="discord-copy-header" title="Copy">
+              <i class="bi bi-clipboard"></i>
+            </button>
+          </div>
+          <div class="discord-popup-open">
+            <a href="discord://-/users/806610398924636200" class="discord-open-link">
+              <span class="discord-open-icon">
+                <i class="bi bi-discord"></i>
+                <span class="discord-open-text">
+                  <span class="discord-open-label">Open in Discord</span>
+                  <span class="discord-open-sub">discord://</span>
+                </span>
+              </span>
+              <span class="discord-open-arrow">→</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</header>
+
+<!-- ======= About Section ======= -->
+<section id="about" class="about">
+
+  <div class="about-me container">
+    <div class="section-title">
+      <h2 data-i18n="about-title-small">About</h2>
+      <p data-i18n="about-title-big">Learn more about me</p>
+    </div>
+    <div class="about-row row align-items-center">
+      <div class="col-lg-4 text-center about-photo-col">
+        <div class="about-photo-backdrop"></div>
+        <div class="profile-frame">
+          <img src="assets/img/me.png" class="img-fluid profile-img" alt="waapno">
+          <div class="profile-frame-border"></div>
+          <div class="profile-status">
+            <span class="status-dot"></span>
+            <span data-i18n="profile-status">Online</span>
+          </div>
+        </div>
+        <div class="about-specialty-pills">
+          <span class="specialty-pill"><i class="bi bi-server"></i> Server Admin</span>
+          <span class="specialty-pill"><i class="bi bi-map"></i> Map Producer</span>
+          <span class="specialty-pill"><i class="bi bi-plug"></i> Plugin Config</span>
+          <span class="specialty-pill specialty-pill-cyan"><i class="bi bi-camera-video"></i> Video Edit</span>
+          <span class="specialty-pill specialty-pill-cyan"><i class="bi bi-image"></i> Photo Edit</span>
+          <span class="specialty-pill specialty-pill-cyan"><i class="bi bi-stars"></i> AI Art</span>
+        </div>
+      </div>
+      <div class="col-lg-8 pt-4 pt-lg-0 about-content-col">
+        <div class="about-content-inner">
+          <div class="about-header">
+            <h3 data-i18n-html="about-h3">Hey! I'm <span class="name-highlight">waapno</span></h3>
+            <p class="about-tagline" data-i18n="about-tagline">I develop Minecraft servers and create visual content. Every project gets my full attention.</p>
+          </div>
+          <div class="about-props">
+            <div class="prop-item">
+              <span class="prop-icon"><i class="bi bi-discord"></i></span>
+              <div class="prop-body">
+                <span class="prop-label" data-i18n="label-discord">Discord</span>
+                <span class="prop-value">waapno#5250</span>
+              </div>
+            </div>
+            <div class="prop-item">
+              <span class="prop-icon"><i class="bi bi-globe"></i></span>
+              <div class="prop-body">
+                <span class="prop-label" data-i18n="label-web">My Market</span>
+                <span class="prop-value"><a href="shop" target="_blank">waapno.github.io/shop</a></span>
+              </div>
+            </div>
+            <div class="prop-item">
+              <span class="prop-icon"><i class="bi bi-geo-alt"></i></span>
+              <div class="prop-body">
+                <span class="prop-label" data-i18n="label-country">Country</span>
+                <span class="prop-value" data-i18n="val-country">🇨🇿 Czech Republic</span>
+              </div>
+            </div>
+            <div class="prop-item">
+              <span class="prop-icon"><i class="bi bi-person"></i></span>
+              <div class="prop-body">
+                <span class="prop-label" data-i18n="label-age">Age</span>
+                <span class="prop-value">25</span>
+              </div>
+            </div>
+            <div class="prop-item">
+              <span class="prop-icon"><i class="bi bi-check-circle"></i></span>
+              <div class="prop-body">
+                <span class="prop-label" data-i18n="label-commission">Commission</span>
+                <span class="prop-value"><span class="badge-open" data-i18n="val-commission">✓ Open</span></span>
+              </div>
+            </div>
+            <div class="prop-item">
+              <span class="prop-icon"><i class="bi bi-envelope"></i></span>
+              <div class="prop-body">
+                <span class="prop-label" data-i18n="label-email">Email</span>
+                <span class="prop-value"><a href="mailto:waapno@proton.me">waapno@proton.me</a></span>
+              </div>
+            </div>
+          </div>
+          <div class="about-desc">
+            <p data-i18n="about-desc">Freelancer focused on Minecraft server development and visual content creation. From server configuration and custom maps to photo retouching, video editing, and AI-assisted artwork — I bring both technical and creative skills to every project.</p>
+          </div>
+          <a href="shop" class="market-inline-btn" target="_blank">
+            <i class="bi bi-shop"></i>
+            <span data-i18n="market-inline-btn">Visit my Market</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Counts -->
+  <div class="counts container">
+    <div class="row g-3">
+      <div class="col-6 col-lg-3">
+        <div class="count-box">
+          <div class="count-icon"><i class="bi bi-emoji-smile"></i></div>
+          <div class="count-text">
+            <span data-purecounter-start="0" data-purecounter-end="31" data-purecounter-duration="1" class="purecounter"></span>
+            <p data-i18n="counts-clients">Happy Clients</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-lg-3">
+        <div class="count-box">
+          <div class="count-icon"><i class="bi bi-journal-richtext"></i></div>
+          <div class="count-text">
+            <span data-purecounter-start="0" data-purecounter-end="13" data-purecounter-duration="1" class="purecounter"></span>
+            <p data-i18n="counts-projects">Completed Projects</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-lg-3">
+        <div class="count-box">
+          <div class="count-icon"><i class="bi bi-headset"></i></div>
+          <div class="count-text">
+            <span data-purecounter-start="0" data-purecounter-end="1106" data-purecounter-duration="1" class="purecounter"></span>
+            <p data-i18n="counts-hours">Support Hours</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-lg-3">
+        <div class="count-box">
+          <div class="count-icon"><i class="bi bi-award"></i></div>
+          <div class="count-text">
+            <span data-purecounter-start="0" data-purecounter-end="7" data-purecounter-duration="1" class="purecounter"></span>
+            <p data-i18n="counts-years">Years Experience</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Skills -->
+  <div class="skills container">
+    <div class="section-title">
+      <h2 data-i18n="skills-title-small">Skills</h2>
+      <p data-i18n="skills-title-big">My Skills</p>
+    </div>
+    <div class="row skills-content">
+      <div class="col-lg-6">
+        <div class="skill-item">
+          <div class="skill-header">
+            <span class="skill-name" data-i18n="skill-server">⚙ Server Management</span>
+            <span class="skill-val">100%</span>
+          </div>
+          <div class="progress-bar-wrap">
+            <div class="progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-header">
+            <span class="skill-name" data-i18n="skill-firewall">🔥 Firewall</span>
+            <span class="skill-val">85%</span>
+          </div>
+          <div class="progress-bar-wrap">
+            <div class="progress-bar" role="progressbar" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="skill-item">
+          <div class="skill-header">
+            <span class="skill-name" data-i18n="skill-maps">🗺 Map Making</span>
+            <span class="skill-val">90%</span>
+          </div>
+          <div class="progress-bar-wrap">
+            <div class="progress-bar" role="progressbar" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-header">
+            <span class="skill-name" data-i18n="skill-plugins">🔌 Plugin Configuration</span>
+            <span class="skill-val">95%</span>
+          </div>
+          <div class="progress-bar-wrap">
+            <div class="progress-bar" role="progressbar" aria-valuenow="95" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Testimonials -->
+  <div class="testimonials container">
+    <div class="section-title">
+      <h2 data-i18n="testimonials-title-small">Testimonials</h2>
+      <p data-i18n="testimonials-title-big">What clients say</p>
+    </div>
+    <div class="testimonials-slider swiper">
+      <div class="swiper-wrapper">
+        <div class="swiper-slide">
+          <div class="testimonial-item">
+            <div class="testimonial-quote-icon"><i class="bx bxs-quote-alt-left"></i></div>
+            <p data-i18n="testimonial-1">Professional approach and fast communication. I recommend to everyone!</p>
+            <div class="testimonial-author">
+              <img src="assets/img/testimonials/user.webp" class="testimonial-img" alt="user">
+              <div><h3>Anonymous Client</h3><h4 data-i18n="testimonial-1-role">Client</h4></div>
+            </div>
+          </div>
+        </div>
+        <div class="swiper-slide">
+          <div class="testimonial-item">
+            <div class="testimonial-quote-icon"><i class="bx bxs-quote-alt-left"></i></div>
+            <p data-i18n="testimonial-2">Professional approach and fast communication. I recommend to everyone!</p>
+            <div class="testimonial-author">
+              <img src="assets/img/testimonials/user.webp" class="testimonial-img" alt="user">
+              <div><h3>Anonymous Client</h3><h4 data-i18n="testimonial-2-role">Client</h4></div>
+            </div>
+          </div>
+        </div>
+        <div class="swiper-slide">
+          <div class="testimonial-item">
+            <div class="testimonial-quote-icon"><i class="bx bxs-quote-alt-left"></i></div>
+            <p data-i18n="testimonial-3">Professional approach and fast communication. I recommend to everyone!</p>
+            <div class="testimonial-author">
+              <img src="assets/img/testimonials/user.webp" class="testimonial-img" alt="">
+              <div><h3 data-i18n="testimonial-anon">Anonymous Client</h3><h4 data-i18n="testimonial-3-role">Client</h4></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="swiper-pagination"></div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ======= Visual Section ======= -->
+<section id="visual" class="visual">
+  <div class="container">
+    <div class="section-title">
+      <h2 data-i18n="visual-title-small">Creative</h2>
+      <p data-i18n="visual-title-big">Visual Services</p>
+    </div>
+    <p class="services-intro" data-i18n="services-intro">Beyond servers — professional visual work where every pixel matters.</p>
+
+    <div class="services-grid">
+
+      <div class="service-card">
+        <div class="service-card-glow"></div>
+        <div class="service-icon-wrap">
+          <span class="service-icon">🎨</span>
+        </div>
+        <div class="service-body">
+          <h4 class="service-title" data-i18n="service-ps-title">Photoshop Editing</h4>
+          <p class="service-desc" data-i18n="service-ps-desc">Compositing, color grading, scene builds — quick fix or full creative piece.</p>
+          <div class="service-tags">
+            <span class="stag">Compositing</span>
+            <span class="stag">Color Grade</span>
+            <span class="stag">Scene Build</span>
+          </div>
+        </div>
+        <div class="service-card-accent"></div>
+      </div>
+
+      <div class="service-card">
+        <div class="service-card-glow"></div>
+        <div class="service-icon-wrap">
+          <span class="service-icon">✨</span>
+        </div>
+        <div class="service-body">
+          <h4 class="service-title" data-i18n="service-rt-title">Photo Retouching</h4>
+          <p class="service-desc" data-i18n="service-rt-desc">Skin, light, detail — refined edits that look natural, not overprocessed.</p>
+          <div class="service-tags">
+            <span class="stag">Skin Retouch</span>
+            <span class="stag">Light Fix</span>
+            <span class="stag">Detail</span>
+          </div>
+        </div>
+        <div class="service-card-accent"></div>
+      </div>
+
+      <div class="service-card">
+        <div class="service-card-glow"></div>
+        <div class="service-icon-wrap">
+          <span class="service-icon">✂️</span>
+        </div>
+        <div class="service-body">
+          <h4 class="service-title" data-i18n="service-mt-title">Matting &amp; Cutout</h4>
+          <p class="service-desc" data-i18n="service-mt-desc">Pixel-precise subject isolation — hair, fur, complex edges. Clean every time.</p>
+          <div class="service-tags">
+            <span class="stag">Cutting / Panning / Cropping</span>
+            <span class="stag">Transitions</span>
+            <span class="stag">Color Grading</span>
+          </div>
+        </div>
+        <div class="service-card-accent"></div>
+      </div>
+
+      <div class="service-card service-card-ai">
+        <div class="service-card-glow"></div>
+        <div class="service-icon-wrap">
+          <span class="service-icon">🤖</span>
+          <span class="service-ai-badge">AI</span>
+        </div>
+        <div class="service-body">
+          <h4 class="service-title" data-i18n="service-ai-title">AI-Assisted Creation</h4>
+          <p class="service-desc" data-i18n="service-ai-desc">Generative workflows, upscaling, concept art, prompt crafting.</p>
+          <div class="service-tags">
+            <span class="stag">Generative</span>
+            <span class="stag">Upscaling</span>
+            <span class="stag">Concept Art</span>
+          </div>
+        </div>
+        <div class="service-card-accent"></div>
+      </div>
+
+    </div>
+
+
+    <!-- ======= Portfolio Gallery ======= -->
+    <div class="gallery-block container">
+      <div class="section-title">
+        <h2 data-i18n="gallery-title-small">Portfolio</h2>
+        <p data-i18n="gallery-title-big">My Work</p>
+      </div>
+      <p class="services-intro" data-i18n="gallery-intro">A quick look at selected pieces — hover to preview, click to view full size.</p>
+
+      <!-- Filter tabs -->
+      <div class="gallery-filters" id="gallery-filters">
+        <button class="gf-btn gf-active" data-filter="all" data-i18n="gf-all">All</button>
+        <button class="gf-btn" data-filter="ps" data-i18n="gf-ps">Photoshop</button>
+        <button class="gf-btn" data-filter="rt" data-i18n="gf-rt">Retouch</button>
+        <button class="gf-btn" data-filter="mt" data-i18n="gf-mt">Video</button>
+        <button class="gf-btn" data-filter="ai" data-i18n="gf-ai">AI</button>
+      </div>
+
+      <!-- Gallery grid — items injected by JS from GALLERY array -->
+      <div class="gallery-grid" id="gallery-grid"></div>
+
+      <!-- Empty state (shown when no images found) -->
+      <div class="gallery-empty" id="gallery-empty" style="display:none">
+        <span class="gallery-empty-icon">🖼</span>
+        <p data-i18n="gallery-empty">No work added yet — check back soon!</p>
+      </div>
+    </div>
+
+    <div class="services-cta">
+      <span class="services-cta-text" data-i18n="services-cta-text">Interested? Let's talk!</span>
+      <a href="#contact" class="nav-link services-cta-btn" data-i18n="services-cta-btn">Get in touch →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ======= Contact Section ======= -->
+<section id="contact" class="contact">
+  <div class="container">
+    <div class="section-title">
+      <h2 data-i18n="contact-title-small">Contact</h2>
+      <p data-i18n="contact-title-big">Get in touch</p>
+    </div>
+    <div class="row g-4 mt-2">
+
+      <div class="col-md-4">
+        <div class="info-box">
+          <div class="info-box-icon">
+            <div class="discord-wrapper">
+              <a href="#" class="discord-trigger" id="discord-trigger-contact" title="Discord">
+                <i class="bi bi-discord"></i>
+              </a>
+              <div class="discord-popup discord-popup-contact" id="discord-popup-contact">
+                <div class="discord-popup-arrow"></div>
+                <div class="discord-popup-inner">
+                  <i class="bi bi-discord discord-popup-icon"></i>
+                  <div class="discord-popup-info">
+                    <span class="discord-popup-label">Discord</span>
+                    <span class="discord-popup-username">waapno#5250</span>
+                  </div>
+                  <button class="discord-popup-copy" id="discord-copy-contact" title="Copy">
+                    <i class="bi bi-clipboard"></i>
+                  </button>
+                </div>
+                <div class="discord-popup-open">
+                  <a href="discord://-/users/806610398924636200" class="discord-open-link">
+                    <span class="discord-open-icon">
+                      <i class="bi bi-discord"></i>
+                      <span class="discord-open-text">
+                        <span class="discord-open-label">Open in Discord</span>
+                        <span class="discord-open-sub">discord://</span>
+                      </span>
+                    </span>
+                    <span class="discord-open-arrow">→</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="info-box-content">
+            <h3>Discord</h3>
+            <p>waapno#5250</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="info-box">
+          <div class="info-box-icon"><i class="bi bi-envelope"></i></div>
+          <div class="info-box-content">
+            <h3>Email</h3>
+            <p><a href="mailto:waapno@proton.me">waapno@proton.me</a></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="info-box">
+          <div class="info-box-icon"><i class="bi bi-share"></i></div>
+          <div class="info-box-content">
+            <h3 data-i18n="contact-social">Social Links</h3>
+            <div class="social-links">
+              <a href="discord://-/users/806610398924636200" class="discord" title="Discord"><i class="bi bi-discord"></i></a>
+              <a href="shop" class="website" title="Website"><i class="bi bi-globe"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="market-cta-section">
+      <div class="market-cta-box">
+        <div class="market-cta-glow"></div>
+        <div class="market-cta-content">
+          <div class="market-cta-icon">🛒</div>
+          <h3 data-i18n="cta-h3">Visit my Market</h3>
+          <p data-i18n="cta-p">Ready-made maps, plugins and configurations for download — neatly in one place.</p>
+          <a href="shop" class="market-cta-btn" target="_blank">
+            <span data-i18n="cta-btn">Go to Market</span>
+            <i class="bi bi-arrow-right-circle"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<script src="assets/vendor/purecounter/purecounter.js"></script>
+<script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
+<script src="assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
+<script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
+<script src="assets/vendor/waypoints/noframework.waypoints.js"></script>
+<script src="assets/js/main.js"></script>
+</body>
+</html>
