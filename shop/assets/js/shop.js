@@ -48,7 +48,7 @@ function loadShop(){
 
 function updateStats(){
   var sm=document.getElementById('stat-maps'),st=document.getElementById('stat-tags');
-  if(sm)sm.textContent=allProducts.length+allBundles.length;
+  if(sm)sm.textContent=allProducts.length;
   if(st){var tags={};allProducts.forEach(function(p){(p.tags||[]).forEach(function(t){tags[t]=1;});});st.textContent=Object.keys(tags).length;}
 }
 
