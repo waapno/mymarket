@@ -507,8 +507,8 @@ function attachDetailKeyboard(){
   if(detailKeyHandler) document.removeEventListener('keydown', detailKeyHandler);
   detailKeyHandler = function(e){
     if(!document.getElementById('detail-overlay').classList.contains('open'))return;
-    if(e.key==='ArrowLeft'){e.preventDefault();slideTo(detailSlideIdx-1,true);}
-    if(e.key==='ArrowRight'){e.preventDefault();slideTo(detailSlideIdx+1,true);}
+    if(e.key==='ArrowLeft'){e.preventDefault();queueDetailSlide(detailSlideIdx-1);}
+    if(e.key==='ArrowRight'){e.preventDefault();queueDetailSlide(detailSlideIdx+1);}
   };
   document.addEventListener('keydown', detailKeyHandler);
 }
@@ -638,8 +638,6 @@ var dov=document.getElementById('detail-overlay');if(dov)dov.addEventListener('c
 document.addEventListener('keydown',function(e){
   if(!document.getElementById('detail-overlay').classList.contains('open'))return;
   if(e.key==='Escape')closeDetailModal();
-  if(e.key==='ArrowLeft')slideTo(detailSlideIdx-1,true);
-  if(e.key==='ArrowRight')slideTo(detailSlideIdx+1,true);
 });
 
 /* Pause autoplay when overlay opens lightbox */
