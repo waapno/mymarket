@@ -54,7 +54,7 @@ a:hover{color:var(--cyan)}
 .hero h1{font-family:var(--fp);font-size:clamp(18px,3.5vw,36px);line-height:1.4;color:#fff;text-shadow:0 0 30px rgba(0,255,127,.25);margin-bottom:14px}
 .hero h1 span{color:var(--green)}
 .hero-sub{font-family:var(--fu);font-size:17px;color:var(--muted);max-width:590px;margin:0 auto 32px;line-height:1.7}
-.hero-stats{display:flex;gap:32px;justify-content:center;flex-wrap:wrap}
+.hero-stats{display:flex;gap:32px;justify-content:center;flex-wrap:wrap;align-items: center}
 .hero-stat{display:flex;flex-direction:column;gap:2px;align-items:center}
 .hero-stat-n{font-family:var(--fp);font-size:20px;color:var(--green);text-shadow:0 0 12px rgba(0,255,127,.5)}
 .hero-stat-l{font-family:var(--fu);font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
