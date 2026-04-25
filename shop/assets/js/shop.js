@@ -16,36 +16,62 @@
 })();
 
 /* Mobile portrait only: keep GLightbox bottom title attached to the photo, not the viewport bottom. */
+(function(){
+  try{
+    var s=document.createElement('style');
+    s.textContent='@media (max-width:767px) and (orientation:portrait){.glightbox-container .gslide.current .gslide-description.description-bottom{display:block!important;visibility:visible!important;opacity:1!important;z-index:99999!important;}}';
+    (document.head||document.documentElement).appendChild(s);
+  }catch(e){}
+})();
+
+function resetGlightboxTitleMobilePortrait(descs){
+  descs.forEach(function(d){
+    d.style.position='';d.style.left='';d.style.right='';d.style.top='';d.style.bottom='';d.style.transform='';d.style.width='';d.style.maxWidth='';d.style.margin='';d.style.boxSizing='';d.style.zIndex='';d.style.display='';d.style.visibility='';d.style.opacity='';
+  });
+}
+
 function alignGlightboxTitleMobilePortrait(){
   try{
     var lb=document.querySelector('.glightbox-container');
     if(!lb)return;
-    var isPortraitMobile=window.matchMedia&&window.matchMedia('(max-width: 767px) and (orientation: portrait)').matches;
     var descs=lb.querySelectorAll('.gslide-description.description-bottom');
-    if(!isPortraitMobile){
-      descs.forEach(function(d){
-        d.style.position='';d.style.left='';d.style.right='';d.style.top='';d.style.bottom='';d.style.transform='';d.style.width='';d.style.maxWidth='';d.style.margin='';d.style.boxSizing='';
-      });
-      return;
-    }
-    var slide=lb.querySelector('.gslide.current')||lb.querySelector('.gslide.loaded')||lb.querySelector('.gslide');
+    var isPortraitMobile=window.matchMedia&&window.matchMedia('(max-width: 767px) and (orientation: portrait)').matches;
+    if(!isPortraitMobile){resetGlightboxTitleMobilePortrait(descs);return;}
+
+    var slide=lb.querySelector('.gslide.current');
     if(!slide)return;
     var img=slide.querySelector('.gslide-image img');
     var desc=slide.querySelector('.gslide-description.description-bottom');
     if(!img||!desc)return;
-    var lbRect=lb.getBoundingClientRect();
+
     var imgRect=img.getBoundingClientRect();
-    desc.style.position='absolute';
-    desc.style.left='50%';
+    if(!imgRect.width||!imgRect.height)return;
+
+    descs.forEach(function(d){if(d!==desc)resetGlightboxTitleMobilePortrait([d]);});
+    desc.style.position='fixed';
+    desc.style.left=Math.round(imgRect.left)+'px';
     desc.style.right='auto';
-    desc.style.top=Math.round(imgRect.bottom-lbRect.top)+'px';
+    desc.style.top=Math.round(imgRect.bottom)+'px';
     desc.style.bottom='auto';
-    desc.style.transform='translateX(-50%)';
+    desc.style.transform='none';
     desc.style.width=Math.round(imgRect.width)+'px';
     desc.style.maxWidth='calc(100vw - 32px)';
     desc.style.margin='0';
     desc.style.boxSizing='border-box';
+    desc.style.zIndex='99999';
+    desc.style.display='block';
+    desc.style.visibility='visible';
+    desc.style.opacity='1';
   }catch(e){}
+}
+
+function scheduleGlightboxTitleMobilePortrait(){
+  alignGlightboxTitleMobilePortrait();
+  if(window.requestAnimationFrame){
+    requestAnimationFrame(function(){alignGlightboxTitleMobilePortrait();});
+    requestAnimationFrame(function(){requestAnimationFrame(alignGlightboxTitleMobilePortrait);});
+  }
+  [80,180,320,520,760].forEach(function(ms){setTimeout(alignGlightboxTitleMobilePortrait,ms);});
 }
 
 var SHOP_CONFIG = {
@@ -510,13 +536,13 @@ function buildDetailSlideshow(images, title){
             });
           });
         });
-        alignGlightboxTitleMobilePortrait();
+        scheduleGlightboxTitleMobilePortrait();
       }, 30);
-      setTimeout(alignGlightboxTitleMobilePortrait, 180);
+      scheduleGlightboxTitleMobilePortrait();
     });
-    detailGlightbox.on('slide_changed', function(){setTimeout(alignGlightboxTitleMobilePortrait, 60);});
-    window.removeEventListener('resize', alignGlightboxTitleMobilePortrait);
-    window.addEventListener('resize', alignGlightboxTitleMobilePortrait);
+    detailGlightbox.on('slide_changed', function(){scheduleGlightboxTitleMobilePortrait();});
+    window.removeEventListener('resize', scheduleGlightboxTitleMobilePortrait);
+    window.addEventListener('resize', scheduleGlightboxTitleMobilePortrait);
     
     /* Resume autoplay when GLightbox closes */
     document.removeEventListener('glightbox_close', onDetailGlightboxClose);
