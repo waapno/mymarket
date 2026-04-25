@@ -15,6 +15,39 @@
   }catch(e){}
 })();
 
+/* Mobile portrait only: keep GLightbox bottom title attached to the photo, not the viewport bottom. */
+function alignGlightboxTitleMobilePortrait(){
+  try{
+    var lb=document.querySelector('.glightbox-container');
+    if(!lb)return;
+    var isPortraitMobile=window.matchMedia&&window.matchMedia('(max-width: 767px) and (orientation: portrait)').matches;
+    var descs=lb.querySelectorAll('.gslide-description.description-bottom');
+    if(!isPortraitMobile){
+      descs.forEach(function(d){
+        d.style.position='';d.style.left='';d.style.right='';d.style.top='';d.style.bottom='';d.style.transform='';d.style.width='';d.style.maxWidth='';d.style.margin='';d.style.boxSizing='';
+      });
+      return;
+    }
+    var slide=lb.querySelector('.gslide.current')||lb.querySelector('.gslide.loaded')||lb.querySelector('.gslide');
+    if(!slide)return;
+    var img=slide.querySelector('.gslide-image img');
+    var desc=slide.querySelector('.gslide-description.description-bottom');
+    if(!img||!desc)return;
+    var lbRect=lb.getBoundingClientRect();
+    var imgRect=img.getBoundingClientRect();
+    desc.style.position='absolute';
+    desc.style.left='50%';
+    desc.style.right='auto';
+    desc.style.top=Math.round(imgRect.bottom-lbRect.top)+'px';
+    desc.style.bottom='auto';
+    desc.style.transform='translateX(-50%)';
+    desc.style.width=Math.round(imgRect.width)+'px';
+    desc.style.maxWidth='calc(100vw - 32px)';
+    desc.style.margin='0';
+    desc.style.boxSizing='border-box';
+  }catch(e){}
+}
+
 var SHOP_CONFIG = {
   BIN_ID:     '69e8800536566621a8dc1cef',
   ACCESS_KEY: '$2a$10$SWsRO4Th4FloGOPvYZPgpew9JY8oA5GYVCiVoKhSubcpmx08/BUim',  /* read-only, safe to be public */
@@ -477,8 +510,13 @@ function buildDetailSlideshow(images, title){
             });
           });
         });
+        alignGlightboxTitleMobilePortrait();
       }, 30);
+      setTimeout(alignGlightboxTitleMobilePortrait, 180);
     });
+    detailGlightbox.on('slide_changed', function(){setTimeout(alignGlightboxTitleMobilePortrait, 60);});
+    window.removeEventListener('resize', alignGlightboxTitleMobilePortrait);
+    window.addEventListener('resize', alignGlightboxTitleMobilePortrait);
     
     /* Resume autoplay when GLightbox closes */
     document.removeEventListener('glightbox_close', onDetailGlightboxClose);
