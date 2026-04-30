@@ -90,7 +90,8 @@ function alignGlightboxTitleMobilePortrait(reveal){
     desc.style.display='block';
     desc.style.visibility='visible';
     desc.style.opacity='1';
-    desc.style.transition='opacity .18s ease-out, transform .2s ease-out';
+    /* Disable transition during active zoom, enable after */
+    desc.style.transition = _glZoomActive ? 'none' : 'opacity .18s ease-out, transform .2s ease-out';
 
     var descRect = desc.getBoundingClientRect();
     if(descRect.bottom > window.innerHeight - 8){
@@ -121,12 +122,42 @@ function scheduleGlightboxTitleMobilePortrait(){
 /* Re-align title when user pinch-zooms (visualViewport resize) or pans (scroll).
    Attach once; a guard flag prevents double-wiring across multiple openDetailModal calls. */
 var _vvListenerAttached = false;
+var _glZoomAnimID = 0;
+var _glZoomActive = false;
+
 function attachVisualViewportListener(){
   if(_vvListenerAttached || !window.visualViewport) return;
   _vvListenerAttached = true;
-  function onVV(){ alignGlightboxTitleMobilePortrait(true); }
-  window.visualViewport.addEventListener('resize', onVV);
-  window.visualViewport.addEventListener('scroll', onVV);
+  
+  function onVVResize(){
+    _glZoomActive = true;
+    alignGlightboxTitleMobilePortrait(true);
+    clearTimeout(_glZoomAnimID);
+    _glZoomAnimID = setTimeout(function(){ _glZoomActive = false; }, 150);
+  }
+  
+  function onVVScroll(){
+    if(!_glZoomActive) alignGlightboxTitleMobilePortrait(true);
+  }
+  
+  window.visualViewport.addEventListener('resize', onVVResize);
+  window.visualViewport.addEventListener('scroll', onVVScroll);
+  
+  /* During active zoom/pan, continuously update title position every frame */
+  var glZoomFrameID = 0;
+  var glMonitorZoom = setInterval(function(){
+    var lb = document.querySelector('.glightbox-container');
+    if(!lb){
+      clearInterval(glMonitorZoom);
+      return;
+    }
+    if(_glZoomActive && window.requestAnimationFrame){
+      cancelAnimationFrame(glZoomFrameID);
+      glZoomFrameID = requestAnimationFrame(function(){
+        alignGlightboxTitleMobilePortrait(true);
+      });
+    }
+  }, 16);
 }
 
 var SHOP_CONFIG = {
@@ -373,6 +404,33 @@ function initGlightbox(){
           ev.preventDefault();
           glightboxInst.close();
         }, {passive:false});
+      }
+      
+      /* Attach zoom/pan tracking on image */
+      var slide = lb.querySelector('.gslide.current');
+      if(slide){
+        var img = slide.querySelector('.gslide-image img');
+        if(img && !img._msZoomTracked){
+          img._msZoomTracked = true;
+          /* Touch gestures: pinch-zoom and pan */
+          img.addEventListener('touchstart', function(){ _glZoomActive = true; }, {passive:true});
+          img.addEventListener('touchmove', function(){
+            if(window.requestAnimationFrame && window.visualViewport){
+              alignGlightboxTitleMobilePortrait(true);
+            }
+          }, {passive:true});
+          img.addEventListener('touchend', function(){
+            clearTimeout(_glZoomAnimID);
+            _glZoomAnimID = setTimeout(function(){ _glZoomActive = false; }, 80);
+          }, {passive:true});
+          /* Mouse wheel zoom */
+          img.addEventListener('wheel', function(){
+            _glZoomActive = true;
+            clearTimeout(_glZoomAnimID);
+            _glZoomAnimID = setTimeout(function(){ _glZoomActive = false; }, 120);
+            alignGlightboxTitleMobilePortrait(true);
+          }, {passive:true});
+        }
       }
       
       scheduleGlightboxTitleMobilePortrait();
