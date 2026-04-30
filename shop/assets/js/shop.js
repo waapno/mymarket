@@ -76,8 +76,8 @@ function relocateGlightboxTitle(){
       var ginner=slide.querySelector('.ginner-container');
       var title=slide.querySelector('.gslide-title');
       var desc=slide.querySelector('.gslide-description.description-bottom');
-      if(gslideImage && title && title.parentElement!==gslideImage){
-        gslideImage.appendChild(title);
+      if(ginner && title && title.parentElement!==ginner){
+        ginner.appendChild(title);
       }
       if(ginner && desc && desc.parentElement!==ginner){
         ginner.appendChild(desc);
