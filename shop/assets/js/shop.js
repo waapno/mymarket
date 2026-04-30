@@ -112,7 +112,7 @@ function startZoomWatch(){
     if(!lb){_zoomWatchID=0;return;}
     var img=lb.querySelector('.gslide.current .gslide-image img');
     var scale=_readScale(img);
-    var zoomed=scale>1.02;
+    var zoomed=scale>1.5; // Hide title at higher zoom levels for better UX
     if(zoomed){
       if(!lb.classList.contains('ms-gl-zoomed'))lb.classList.add('ms-gl-zoomed');
     }else{
@@ -346,9 +346,8 @@ function initGlightbox(){
     autoplayVideos:false,
     skin:'clean',
     zoomable: true,
-    /* Allow real pinch / wheel zoom up to 2x. Containment to the
-       photo's frame is enforced via CSS overflow:hidden on .gslide-image. */
-    maxZoom: 2
+    /* Allow real pinch / wheel zoom up to 5x for modern displays */
+    maxZoom: 5
   });
   
   /* Setup mobile close handlers for main glightbox */
@@ -378,6 +377,31 @@ function initGlightbox(){
         closeBtn.addEventListener('touchend', function(ev){
           ev.preventDefault();
           glightboxInst.close();
+        }, {passive:false});
+      }
+
+      /* Double tap to zoom in/out on mobile */
+      var img = lb.querySelector('.gslide.current .gslide-image img');
+      if(img && !img._msDblTapAttached){
+        img._msDblTapAttached = true;
+        var lastTap = 0;
+        img.addEventListener('touchend', function(ev){
+          var currentTime = new Date().getTime();
+          var tapGap = currentTime - lastTap;
+          if(tapGap < 300 && tapGap > 0){
+            // Double tap detected - toggle zoom
+            ev.preventDefault();
+            ev.stopPropagation();
+            // GLightbox handles zoom internally, just trigger it
+            var zoomEvent = new MouseEvent('dblclick', {
+              bubbles: true,
+              cancelable: true,
+              clientX: ev.changedTouches[0].clientX,
+              clientY: ev.changedTouches[0].clientY
+            });
+            img.dispatchEvent(zoomEvent);
+          }
+          lastTap = currentTime;
         }, {passive:false});
       }
 
@@ -618,7 +642,7 @@ function buildDetailSlideshow(images, title){
       moreLength: 0,
       keyboardNavigation: true,
       zoomable: true,
-      maxZoom: 2
+      maxZoom: 5
     });
     /* Click on the image itself = close, but NEVER close when clicking the side arrows. */
     detailGlightbox.on('open', function(){
@@ -627,19 +651,41 @@ function buildDetailSlideshow(images, title){
       setTimeout(function(){
         var lb = document.querySelector('.glightbox-container');
         if(!lb) return;
-        /* Disable inner zoom affordance/raw-image mode, click on image itself = close */
+        /* Disable inner zoom affordance/raw-image mode, double tap to zoom, single tap to close */
         lb.querySelectorAll('.gslide-image img, .gslide-media').forEach(function(el){
           el.style.cursor = 'zoom-out';
           if(el.classList) el.classList.remove('zoomable');
           el.removeAttribute('data-style');
-          ['click','dblclick'].forEach(function(evt){
-            el.addEventListener(evt, function(ev){
-              if(ev.target && ev.target.closest && ev.target.closest('.gnext, .gprev, .gclose, .gbtn'))return;
+
+          /* Double tap for zoom */
+          var lastTap = 0;
+          el.addEventListener('touchend', function(ev){
+            if(ev.target && ev.target.closest && ev.target.closest('.gnext, .gprev, .gclose, .gbtn'))return;
+            var currentTime = new Date().getTime();
+            var tapGap = currentTime - lastTap;
+            if(tapGap < 300 && tapGap > 0){
+              // Double tap detected - let GLightbox handle zoom
               ev.preventDefault();
               ev.stopPropagation();
-              detailGlightbox.close();
-            });
-          });
+              var zoomEvent = new MouseEvent('dblclick', {
+                bubbles: true,
+                cancelable: true,
+                clientX: ev.changedTouches[0].clientX,
+                clientY: ev.changedTouches[0].clientY
+              });
+              el.dispatchEvent(zoomEvent);
+            } else {
+              // Single tap - close only if not zoomed
+              setTimeout(function(){
+                var img = lb.querySelector('.gslide.current .gslide-image img');
+                var scale = img ? _readScale(img) : 1;
+                if(scale <= 1.1){ // Close only if not zoomed
+                  detailGlightbox.close();
+                }
+              }, 300);
+            }
+            lastTap = currentTime;
+          }, {passive:false});
         });
 
         /* Mobile touch-close: tap on overlay background or X button */

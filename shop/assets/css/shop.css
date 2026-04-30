@@ -405,7 +405,7 @@ a:hover{color:var(--cyan)}
 
 .gslide-image{
   position:relative!important;
-  overflow:hidden!important;
+  /* Removed overflow:hidden to allow zoom beyond image boundaries */
   grid-column:1!important;
   grid-row:1!important;
 }
