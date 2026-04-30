@@ -67,36 +67,23 @@ function alignGlightboxTitleMobilePortrait(reveal){
     var isMobileSmall=window.matchMedia&&window.matchMedia('(max-width: 767px)').matches;
     if(!isMobileSmall){resetGlightboxTitleMobilePortrait([desc]);return;}
 
-    var imgRect=img.getBoundingClientRect();
-    if(!imgRect.width||!imgRect.height)return;
+    var imgContainer = img.parentElement;
+    if(!imgContainer)return;
 
-    var vvOffsetTop = (window.visualViewport ? window.visualViewport.offsetTop : 0);
-    var vvOffsetLeft = (window.visualViewport ? window.visualViewport.offsetLeft : 0);
-    var targetLeft = Math.max(8, Math.round(imgRect.left + vvOffsetLeft));
-    var targetTop = Math.round(imgRect.bottom + vvOffsetTop);
-    var targetWidth = Math.min(imgRect.width, window.innerWidth - 16);
+    /* Always attach title to image container so it scales with zoom */
+    if(desc.parentElement !== imgContainer){
+      imgContainer.appendChild(desc);
+    }
 
-    desc.style.position='fixed';
-    desc.style.left=targetLeft+'px';
-    desc.style.right='auto';
-    desc.style.top=targetTop+'px';
-    desc.style.bottom='auto';
-    desc.style.transform='translateY(0)';
-    desc.style.width=targetWidth+'px';
-    desc.style.maxWidth='calc(100vw - 16px)';
-    desc.style.margin='0';
-    desc.style.boxSizing='border-box';
-    desc.style.zIndex='99999';
-    desc.style.display='block';
-    desc.style.visibility='visible';
-    desc.style.opacity='1';
-    /* Disable transition during active zoom, enable after */
-    desc.style.transition = _glZoomActive ? 'none' : 'opacity .18s ease-out, transform .2s ease-out';
-
-    var descRect = desc.getBoundingClientRect();
-    if(descRect.bottom > window.innerHeight - 8){
-      desc.style.top='auto';
-      desc.style.bottom='8px';
+    /* During zoom, hide title for static behavior */
+    if(_glZoomActive){
+      desc.style.display='none';
+    }else{
+      /* Normal state: show title */
+      desc.style.display='block';
+      desc.style.visibility='visible';
+      desc.style.opacity='1';
+      desc.style.transition='opacity .18s ease-out';
     }
 
     if(reveal!==false&&desc.classList)desc.classList.add('ms-title-ready');

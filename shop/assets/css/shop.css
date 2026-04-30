@@ -403,6 +403,28 @@ a:hover{color:var(--cyan)}
 }
 .gdesc-inner{padding:0!important;margin:0!important;background:transparent!important}
 
+.gslide-image{
+  position:relative!important;
+}
+.gslide-image .gslide-description.description-bottom,
+.gslide-image .gslide-title{
+  position:absolute!important;
+  left:0!important;
+  right:0!important;
+  top:100%!important;
+  bottom:auto!important;
+  transform:none!important;
+  width:100%!important;
+  max-width:none!important;
+  margin:0!important;
+  box-sizing:border-box!important;
+  z-index:10!important;
+  display:block!important;
+  visibility:visible!important;
+  opacity:1!important;
+  transition:none!important;
+}
+
 .gslide-title{
   display:flex!important;align-items:center!important;gap:12px!important;
   width:100%!important;margin:0!important;padding:11px 18px!important;
