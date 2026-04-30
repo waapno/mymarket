@@ -67,23 +67,37 @@ function alignGlightboxTitleMobilePortrait(reveal){
     var isMobileSmall=window.matchMedia&&window.matchMedia('(max-width: 767px)').matches;
     if(!isMobileSmall){resetGlightboxTitleMobilePortrait([desc]);return;}
 
-    var imgContainer = img.parentElement;
-    if(!imgContainer)return;
-
-    /* Always attach title to image container so it scales with zoom */
-    if(desc.parentElement !== imgContainer){
-      imgContainer.appendChild(desc);
+    /* Move title to top position in mobile portrait */
+    var ginnerContainer = slide.querySelector('.ginner-container');
+    if(ginnerContainer && desc.parentElement !== ginnerContainer){
+      ginnerContainer.insertBefore(desc, ginnerContainer.firstChild);
     }
 
-    /* During zoom, hide title for static behavior */
+    /* During zoom, hide gslide-description and title in portrait for cleaner view */
+    var descToHide = slide.querySelector('.gslide-description.description-bottom');
+    var titleToHide = slide.querySelector('.gslide-title');
+
     if(_glZoomActive){
-      desc.style.display='none';
+      if(descToHide){
+        descToHide.style.display='none';
+      }
+      if(titleToHide){
+        titleToHide.style.display='none';
+      }
     }else{
-      /* Normal state: show title */
-      desc.style.display='block';
-      desc.style.visibility='visible';
-      desc.style.opacity='1';
-      desc.style.transition='opacity .18s ease-out';
+      /* Normal state: show description and title */
+      if(descToHide){
+        descToHide.style.display='block';
+        descToHide.style.visibility='visible';
+        descToHide.style.opacity='1';
+        descToHide.style.transition='opacity .18s ease-out';
+      }
+      if(titleToHide){
+        titleToHide.style.display='flex';
+        titleToHide.style.visibility='visible';
+        titleToHide.style.opacity='1';
+        titleToHide.style.transition='opacity .18s ease-out';
+      }
     }
 
     if(reveal!==false&&desc.classList)desc.classList.add('ms-title-ready');
@@ -362,7 +376,15 @@ function calcBundleOrig(b){
 function initGlightbox(){
   if(typeof GLightbox==='undefined')return;
   if(glightboxInst){try{glightboxInst.destroy();}catch(e){}}
-  glightboxInst=GLightbox({selector:'.glb-links a',touchNavigation:true,loop:true,autoplayVideos:false,skin:'clean'});
+  glightboxInst=GLightbox({
+    selector:'.glb-links a',
+    touchNavigation:true,
+    loop:true,
+    autoplayVideos:false,
+    skin:'clean',
+    zoomable: true,
+    maxZoom: 1  // Limit zoom to original size only
+  });
   
   /* Setup mobile close handlers for main glightbox */
   glightboxInst.on('open', function(){
