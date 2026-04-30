@@ -556,6 +556,13 @@ function buildDetailSlideshow(images, title){
       scheduleGlightboxTitleMobilePortrait();
     });
     detailGlightbox.on('slide_changed', function(){scheduleGlightboxTitleMobilePortrait();});
+    /* Resume autoplay when GLightbox closes — use the native .on() callback,
+       not a DOM event, because GLightbox does not dispatch CustomEvents */
+    detailGlightbox.on('close', function(){
+      if(document.getElementById('detail-overlay').classList.contains('open')){
+        startAutoplay();
+      }
+    });
     window.removeEventListener('resize', scheduleGlightboxTitleMobilePortrait);
     window.addEventListener('resize', scheduleGlightboxTitleMobilePortrait);
     
