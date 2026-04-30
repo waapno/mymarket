@@ -15,114 +15,79 @@
   }catch(e){}
 })();
 
-/* Mobile: keep GLightbox bottom description attached to the photo,
-   NOT to the viewport bottom; constrain zoom to the photo's frame. */
+/* Mobile portrait only: keep GLightbox bottom title attached to the photo, not the viewport bottom. */
 (function(){
   try{
     var s=document.createElement('style');
-    s.textContent=
-      /* ----- Mobile only (portrait + landscape) -----
-         Description is moved into .ginner-container (the slide's
-         layout box that already wraps .gslide-image). We pin it to
-         the BOTTOM of that container with position:absolute. That box
-         exists in both portrait and landscape and isn't clipped, so
-         the title is always visible directly under the photo area. */
-      '@media (max-width:900px){'+
-        '.glightbox-container .ginner-container{position:relative;}'+
-        '.glightbox-container .ginner-container .gslide-description.description-bottom{'+
-          'position:absolute!important;left:0!important;right:0!important;'+
-          'top:auto!important;bottom:0!important;'+
-          'width:100%!important;max-width:100%!important;margin:0!important;'+
-          'padding:8px 14px!important;box-sizing:border-box!important;'+
-          'background:rgba(6,9,10,.78)!important;backdrop-filter:blur(6px);'+
-          '-webkit-backdrop-filter:blur(6px);'+
-          'transform:none!important;z-index:5;pointer-events:none;'+
-          'opacity:1;transition:opacity .15s ease-out;'+
-        '}'+
-        /* Hide title while the photo is being zoomed/panned on mobile */
-        '.glightbox-container.ms-gl-zoomed .ginner-container .gslide-description.description-bottom{'+
-          'opacity:0!important;'+
-        '}'+
-      '}'+
-      /* Containment for zoom/pan: only clip while actively zoomed,
-         so we don't interfere with GLightbox's default slide animation
-         on desktop or in the relaxed (non-zoomed) state. */
-      '.glightbox-container.ms-gl-zoomed .gslide-image{overflow:hidden;}';
+    s.textContent='@media (max-width:767px) and (orientation:portrait){.glightbox-container .gslide-description.description-bottom{display:block!important;visibility:hidden!important;opacity:0!important;transition:none!important;}.glightbox-container .gslide-description.description-bottom.ms-title-ready{visibility:visible!important;opacity:1!important;z-index:99999!important;}}';
     (document.head||document.documentElement).appendChild(s);
   }catch(e){}
 })();
 
-/* ============================================================
-   Mobile-portrait title placement + zoom hide
-   ------------------------------------------------------------
-   Strategy: instead of computing a position from the image's
-   bounding rect (which fights zoom/transform animations and
-   produces snap/flicker), we move .gslide-description INTO
-   .gslide-image. CSS then pins it flush below the image with
-   position:absolute; top:100% — no JS math, no jitter.
+function resetGlightboxTitleMobilePortrait(descs){
+  descs.forEach(function(d){
+    if(d.classList)d.classList.remove('ms-title-ready');
+    d.style.position='';d.style.left='';d.style.right='';d.style.top='';d.style.bottom='';d.style.transform='';d.style.width='';d.style.maxWidth='';d.style.margin='';d.style.boxSizing='';d.style.zIndex='';d.style.display='';d.style.visibility='';d.style.opacity='';
+  });
+}
 
-   For the "hide title while zooming" feature we read the inline
-   transform scale of the inner <img> on a rAF poll while the
-   lightbox is open, and toggle .ms-gl-zoomed on the container.
-   ============================================================ */
-
-function relocateGlightboxTitle(){
+function prepareGlightboxTitleMobilePortrait(){
   try{
     var lb=document.querySelector('.glightbox-container');
     if(!lb)return;
-    var slides=lb.querySelectorAll('.gslide');
-    slides.forEach(function(slide){
-      var gslideImage=slide.querySelector('.gslide-image');
-      var ginner=slide.querySelector('.ginner-container');
-      var title=slide.querySelector('.gslide-title');
-      var desc=slide.querySelector('.gslide-description.description-bottom');
-      if(ginner && title && title.parentElement!==ginner){
-        ginner.appendChild(title);
-      }
-      if(ginner && desc && desc.parentElement!==ginner){
-        ginner.appendChild(desc);
-      }
-    });
+    var descs=lb.querySelectorAll('.gslide-description.description-bottom');
+    var isPortraitMobile=window.matchMedia&&window.matchMedia('(max-width: 767px) and (orientation: portrait)').matches;
+    if(!isPortraitMobile){resetGlightboxTitleMobilePortrait(descs);return;}
+    descs.forEach(function(d){if(d.classList)d.classList.remove('ms-title-ready');});
   }catch(e){}
 }
 
-function _readScale(el){
-  if(!el)return 1;
-  var t=el.style.transform||'';
-  var m=t.match(/matrix\(\s*([-\d.]+)/);
-  if(m)return parseFloat(m[1])||1;
-  m=t.match(/scale\(\s*([-\d.]+)/);
-  if(m)return parseFloat(m[1])||1;
-  /* fall back to computed style */
+function alignGlightboxTitleMobilePortrait(reveal){
   try{
-    var cs=getComputedStyle(el).transform;
-    if(cs && cs!=='none'){
-      var mm=cs.match(/matrix\(\s*([-\d.]+)/);
-      if(mm)return parseFloat(mm[1])||1;
-    }
-  }catch(_){}
-  return 1;
+    var lb=document.querySelector('.glightbox-container');
+    if(!lb)return;
+    var descs=lb.querySelectorAll('.gslide-description.description-bottom');
+    var isPortraitMobile=window.matchMedia&&window.matchMedia('(max-width: 767px) and (orientation: portrait)').matches;
+    if(!isPortraitMobile){resetGlightboxTitleMobilePortrait(descs);return;}
+
+    var slide=lb.querySelector('.gslide.current');
+    if(!slide)return;
+    var img=slide.querySelector('.gslide-image img');
+    var desc=slide.querySelector('.gslide-description.description-bottom');
+    if(!img||!desc)return;
+
+    var imgRect=img.getBoundingClientRect();
+    if(!imgRect.width||!imgRect.height)return;
+
+    descs.forEach(function(d){if(d!==desc)resetGlightboxTitleMobilePortrait([d]);});
+    desc.style.position='fixed';
+    desc.style.left=Math.round(imgRect.left)+'px';
+    desc.style.right='auto';
+    desc.style.top=Math.round(imgRect.bottom)+'px';
+    desc.style.bottom='auto';
+    desc.style.transform='none';
+    desc.style.width=Math.round(imgRect.width)+'px';
+    desc.style.maxWidth='calc(100vw - 32px)';
+    desc.style.margin='0';
+    desc.style.boxSizing='border-box';
+    desc.style.zIndex='99999';
+    desc.style.display='block';
+    desc.style.visibility='visible';
+    desc.style.opacity='1';
+    if(reveal!==false&&desc.classList)desc.classList.add('ms-title-ready');
+  }catch(e){}
 }
 
-var _zoomWatchID=0;
-function startZoomWatch(){
-  cancelAnimationFrame(_zoomWatchID);
-  function tick(){
-    var lb=document.querySelector('.glightbox-container');
-    if(!lb){_zoomWatchID=0;return;}
-    var img=lb.querySelector('.gslide.current .gslide-image img');
-    var scale=_readScale(img);
-    var zoomed=scale>1.5; // Hide title at higher zoom levels for better UX
-    if(zoomed){
-      if(!lb.classList.contains('ms-gl-zoomed'))lb.classList.add('ms-gl-zoomed');
-    }else{
-      if(lb.classList.contains('ms-gl-zoomed'))lb.classList.remove('ms-gl-zoomed');
-    }
-    _zoomWatchID=requestAnimationFrame(tick);
+function scheduleGlightboxTitleMobilePortrait(){
+  prepareGlightboxTitleMobilePortrait();
+  if(window.requestAnimationFrame){
+    requestAnimationFrame(function(){alignGlightboxTitleMobilePortrait(false);});
+    requestAnimationFrame(function(){requestAnimationFrame(function(){alignGlightboxTitleMobilePortrait(true);});});
+  }else{
+    alignGlightboxTitleMobilePortrait(true);
   }
-  _zoomWatchID=requestAnimationFrame(tick);
+  [80,180,320,520,760].forEach(function(ms){setTimeout(function(){alignGlightboxTitleMobilePortrait(true);},ms);});
 }
-function stopZoomWatch(){cancelAnimationFrame(_zoomWatchID);_zoomWatchID=0;}
 
 var SHOP_CONFIG = {
   BIN_ID:     '69e8800536566621a8dc1cef',
@@ -339,82 +304,7 @@ function calcBundleOrig(b){
 function initGlightbox(){
   if(typeof GLightbox==='undefined')return;
   if(glightboxInst){try{glightboxInst.destroy();}catch(e){}}
-  glightboxInst=GLightbox({
-    selector:'.glb-links a',
-    touchNavigation:true,
-    loop:true,
-    autoplayVideos:false,
-    skin:'clean',
-    zoomable: true,
-    /* Allow real pinch / wheel zoom up to 5x for modern displays */
-    maxZoom: 5
-  });
-  
-  /* Setup mobile close handlers for main glightbox */
-  glightboxInst.on('open', function(){
-    relocateGlightboxTitle();
-    startZoomWatch();
-    setTimeout(function(){
-      var lb = document.querySelector('.glightbox-container');
-      if(!lb) return;
-      
-      /* Close on overlay/outside tap */
-      var overlay = lb.querySelector('.goverlay');
-      if(overlay && !overlay._msCloseAttached){
-        overlay._msCloseAttached = true;
-        overlay.addEventListener('touchend', function(ev){
-          if(ev.target === overlay){
-            ev.preventDefault();
-            glightboxInst.close();
-          }
-        }, {passive:false});
-      }
-      
-      /* Close on X button tap */
-      var closeBtn = lb.querySelector('.gclose');
-      if(closeBtn && !closeBtn._msCloseAttached){
-        closeBtn._msCloseAttached = true;
-        closeBtn.addEventListener('touchend', function(ev){
-          ev.preventDefault();
-          glightboxInst.close();
-        }, {passive:false});
-      }
-
-      /* Double tap to zoom in/out on mobile */
-      var img = lb.querySelector('.gslide.current .gslide-image img');
-      if(img && !img._msDblTapAttached){
-        img._msDblTapAttached = true;
-        var lastTap = 0;
-        img.addEventListener('touchend', function(ev){
-          var currentTime = new Date().getTime();
-          var tapGap = currentTime - lastTap;
-          if(tapGap < 300 && tapGap > 0){
-            // Double tap detected - toggle zoom
-            ev.preventDefault();
-            ev.stopPropagation();
-            // GLightbox handles zoom internally, just trigger it
-            var zoomEvent = new MouseEvent('dblclick', {
-              bubbles: true,
-              cancelable: true,
-              clientX: ev.changedTouches[0].clientX,
-              clientY: ev.changedTouches[0].clientY
-            });
-            img.dispatchEvent(zoomEvent);
-          }
-          lastTap = currentTime;
-        }, {passive:false});
-      }
-
-      relocateGlightboxTitle();
-    }, 30);
-  });
-  
-  glightboxInst.on('slide_changed', function(){
-    relocateGlightboxTitle();
-  });
-  glightboxInst.on('close', function(){
-    stopZoomWatch();
-  });
+  glightboxInst=GLightbox({selector:'.glb-links a',touchNavigation:true,loop:true,autoplayVideos:false,skin:'clean'});
 }
 
 /* ── Detail modal buttons ── */
@@ -640,88 +530,35 @@ function buildDetailSlideshow(images, title){
       closeOnOutsideClick: true,
       closeOnSlideClick: false,
       moreLength: 0,
-      keyboardNavigation: true,
-      zoomable: true,
-      maxZoom: 5
+      keyboardNavigation: true
     });
     /* Click on the image itself = close, but NEVER close when clicking the side arrows. */
     detailGlightbox.on('open', function(){
-      relocateGlightboxTitle();
-      startZoomWatch();
       setTimeout(function(){
         var lb = document.querySelector('.glightbox-container');
         if(!lb) return;
-        /* Disable inner zoom affordance/raw-image mode, double tap to zoom, single tap to close */
+        /* Disable inner zoom affordance/raw-image mode, click on image itself = close */
         lb.querySelectorAll('.gslide-image img, .gslide-media').forEach(function(el){
           el.style.cursor = 'zoom-out';
           if(el.classList) el.classList.remove('zoomable');
           el.removeAttribute('data-style');
-
-          /* Double tap for zoom */
-          var lastTap = 0;
-          el.addEventListener('touchend', function(ev){
-            if(ev.target && ev.target.closest && ev.target.closest('.gnext, .gprev, .gclose, .gbtn'))return;
-            var currentTime = new Date().getTime();
-            var tapGap = currentTime - lastTap;
-            if(tapGap < 300 && tapGap > 0){
-              // Double tap detected - let GLightbox handle zoom
+          ['click','dblclick'].forEach(function(evt){
+            el.addEventListener(evt, function(ev){
+              if(ev.target && ev.target.closest && ev.target.closest('.gnext, .gprev, .gclose, .gbtn'))return;
               ev.preventDefault();
               ev.stopPropagation();
-              var zoomEvent = new MouseEvent('dblclick', {
-                bubbles: true,
-                cancelable: true,
-                clientX: ev.changedTouches[0].clientX,
-                clientY: ev.changedTouches[0].clientY
-              });
-              el.dispatchEvent(zoomEvent);
-            } else {
-              // Single tap - close only if not zoomed
-              setTimeout(function(){
-                var img = lb.querySelector('.gslide.current .gslide-image img');
-                var scale = img ? _readScale(img) : 1;
-                if(scale <= 1.1){ // Close only if not zoomed
-                  detailGlightbox.close();
-                }
-              }, 300);
-            }
-            lastTap = currentTime;
-          }, {passive:false});
-        });
-
-        /* Mobile touch-close: tap on overlay background or X button */
-        var overlay = lb.querySelector('.goverlay');
-        if(overlay && !overlay._msCloseBound){
-          overlay._msCloseBound = true;
-          overlay.addEventListener('touchend', function(ev){
-            /* Only if the tap didn't land on the slide itself */
-            if(ev.target === overlay){
-              ev.preventDefault();
               detailGlightbox.close();
-            }
-          }, {passive:false});
-        }
-        var closeBtn = lb.querySelector('.gclose');
-        if(closeBtn && !closeBtn._msCloseBound){
-          closeBtn._msCloseBound = true;
-          closeBtn.addEventListener('touchend', function(ev){
-            ev.preventDefault();
-            detailGlightbox.close();
-          }, {passive:false});
-        }
-
-        relocateGlightboxTitle();
+            });
+          });
+        });
+        scheduleGlightboxTitleMobilePortrait();
       }, 30);
+      scheduleGlightboxTitleMobilePortrait();
     });
-    detailGlightbox.on('slide_changed', function(){relocateGlightboxTitle();});
-    /* Resume autoplay when GLightbox closes — use the native .on() callback,
-       not a DOM event, because GLightbox does not dispatch CustomEvents */
-    detailGlightbox.on('close', function(){
-      stopZoomWatch();
-      if(document.getElementById('detail-overlay').classList.contains('open')){
-        startAutoplay();
-      }
-    });
-
+    detailGlightbox.on('slide_changed', function(){scheduleGlightboxTitleMobilePortrait();});
+    window.removeEventListener('resize', scheduleGlightboxTitleMobilePortrait);
+    window.addEventListener('resize', scheduleGlightboxTitleMobilePortrait);
+    
     /* Resume autoplay when GLightbox closes */
     document.removeEventListener('glightbox_close', onDetailGlightboxClose);
     document.addEventListener('glightbox_close', onDetailGlightboxClose);
