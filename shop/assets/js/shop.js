@@ -59,11 +59,21 @@ function alignGlightboxTitleMobilePortrait(reveal){
     var imgRect=img.getBoundingClientRect();
     if(!imgRect.width||!imgRect.height)return;
 
+    /* ── Zoom-aware offset via visualViewport API ──
+       When the user pinch-zooms, the visual viewport shifts relative to the
+       layout viewport. getBoundingClientRect() already reports positions in
+       CSS pixels of the visual viewport, so no scale math is needed — but
+       fixed positioning is anchored to the layout viewport. We compensate by
+       adding visualViewport.offsetTop (the scroll offset of the visual
+       viewport within the layout viewport). */
+    var vvOffsetTop = (window.visualViewport ? window.visualViewport.offsetTop : 0);
+    var vvOffsetLeft = (window.visualViewport ? window.visualViewport.offsetLeft : 0);
+
     descs.forEach(function(d){if(d!==desc)resetGlightboxTitleMobilePortrait([d]);});
     desc.style.position='fixed';
-    desc.style.left=Math.round(imgRect.left)+'px';
+    desc.style.left=Math.round(imgRect.left + vvOffsetLeft)+'px';
     desc.style.right='auto';
-    desc.style.top=Math.round(imgRect.bottom)+'px';
+    desc.style.top=Math.round(imgRect.bottom + vvOffsetTop)+'px';
     desc.style.bottom='auto';
     desc.style.transform='none';
     desc.style.width=Math.round(imgRect.width)+'px';
@@ -87,6 +97,17 @@ function scheduleGlightboxTitleMobilePortrait(){
     alignGlightboxTitleMobilePortrait(true);
   }
   [80,180,320,520,760].forEach(function(ms){setTimeout(function(){alignGlightboxTitleMobilePortrait(true);},ms);});
+}
+
+/* Re-align title when user pinch-zooms (visualViewport resize) or pans (scroll).
+   Attach once; a guard flag prevents double-wiring across multiple openDetailModal calls. */
+var _vvListenerAttached = false;
+function attachVisualViewportListener(){
+  if(_vvListenerAttached || !window.visualViewport) return;
+  _vvListenerAttached = true;
+  function onVV(){ alignGlightboxTitleMobilePortrait(true); }
+  window.visualViewport.addEventListener('resize', onVV);
+  window.visualViewport.addEventListener('scroll', onVV);
 }
 
 var SHOP_CONFIG = {
@@ -534,6 +555,7 @@ function buildDetailSlideshow(images, title){
     });
     /* Click on the image itself = close, but NEVER close when clicking the side arrows. */
     detailGlightbox.on('open', function(){
+      attachVisualViewportListener();
       setTimeout(function(){
         var lb = document.querySelector('.glightbox-container');
         if(!lb) return;
@@ -551,6 +573,28 @@ function buildDetailSlideshow(images, title){
             });
           });
         });
+
+        /* Mobile touch-close: tap on overlay background or X button */
+        var overlay = lb.querySelector('.goverlay');
+        if(overlay && !overlay._msCloseBound){
+          overlay._msCloseBound = true;
+          overlay.addEventListener('touchend', function(ev){
+            /* Only if the tap didn't land on the slide itself */
+            if(ev.target === overlay){
+              ev.preventDefault();
+              detailGlightbox.close();
+            }
+          }, {passive:false});
+        }
+        var closeBtn = lb.querySelector('.gclose');
+        if(closeBtn && !closeBtn._msCloseBound){
+          closeBtn._msCloseBound = true;
+          closeBtn.addEventListener('touchend', function(ev){
+            ev.preventDefault();
+            detailGlightbox.close();
+          }, {passive:false});
+        }
+
         scheduleGlightboxTitleMobilePortrait();
       }, 30);
       scheduleGlightboxTitleMobilePortrait();
