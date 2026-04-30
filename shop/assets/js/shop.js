@@ -72,8 +72,13 @@ function relocateGlightboxTitle(){
     if(!lb)return;
     var slides=lb.querySelectorAll('.gslide');
     slides.forEach(function(slide){
+      var gslideImage=slide.querySelector('.gslide-image');
       var ginner=slide.querySelector('.ginner-container');
+      var title=slide.querySelector('.gslide-title');
       var desc=slide.querySelector('.gslide-description.description-bottom');
+      if(gslideImage && title && title.parentElement!==gslideImage){
+        gslideImage.appendChild(title);
+      }
       if(ginner && desc && desc.parentElement!==ginner){
         ginner.appendChild(desc);
       }
@@ -341,9 +346,9 @@ function initGlightbox(){
     autoplayVideos:false,
     skin:'clean',
     zoomable: true,
-    /* Allow real pinch / wheel zoom up to 3x. Containment to the
+    /* Allow real pinch / wheel zoom up to 2x. Containment to the
        photo's frame is enforced via CSS overflow:hidden on .gslide-image. */
-    maxZoom: 3
+    maxZoom: 2
   });
   
   /* Setup mobile close handlers for main glightbox */
@@ -613,7 +618,7 @@ function buildDetailSlideshow(images, title){
       moreLength: 0,
       keyboardNavigation: true,
       zoomable: true,
-      maxZoom: 3
+      maxZoom: 2
     });
     /* Click on the image itself = close, but NEVER close when clicking the side arrows. */
     detailGlightbox.on('open', function(){
