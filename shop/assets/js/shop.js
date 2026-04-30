@@ -19,15 +19,25 @@
 (function(){
   try{
     var s=document.createElement('style');
-    s.textContent='@media (max-width:767px) and (orientation:portrait){.glightbox-container .gslide-description.description-bottom{display:block!important;visibility:hidden!important;opacity:0!important;transition:none!important;}.glightbox-container .gslide-description.description-bottom.ms-title-ready{visibility:visible!important;opacity:1!important;z-index:99999!important;}}';
+    s.textContent='@media (max-width:767px) and (orientation:portrait){'+
+      '.glightbox-container .gslide-title{'+
+        'will-change:transform,left,top;'+
+        'transition:none!important;'+
+        'opacity:0;'+
+      '}'+
+      '.glightbox-container .gslide-title.ms-title-ready{'+
+        'opacity:1;'+
+        'transition:opacity .15s ease-out;'+
+      '}'+
+    '}';
     (document.head||document.documentElement).appendChild(s);
   }catch(e){}
 })();
 
-function resetGlightboxTitleMobilePortrait(descs){
-  descs.forEach(function(d){
-    if(d.classList)d.classList.remove('ms-title-ready');
-    d.style.position='';d.style.left='';d.style.right='';d.style.top='';d.style.bottom='';d.style.transform='';d.style.width='';d.style.maxWidth='';d.style.margin='';d.style.boxSizing='';d.style.zIndex='';d.style.display='';d.style.visibility='';d.style.opacity='';
+function resetGlightboxTitleMobilePortrait(titles){
+  titles.forEach(function(t){
+    if(t.classList)t.classList.remove('ms-title-ready');
+    t.style.position='';t.style.left='';t.style.right='';t.style.top='';t.style.bottom='';t.style.transform='';t.style.width='';t.style.maxWidth='';t.style.margin='';t.style.boxSizing='';t.style.zIndex='';t.style.display='';t.style.opacity='';
   });
 }
 
@@ -35,10 +45,10 @@ function prepareGlightboxTitleMobilePortrait(){
   try{
     var lb=document.querySelector('.glightbox-container');
     if(!lb)return;
-    var descs=lb.querySelectorAll('.gslide-description.description-bottom');
+    var titles=lb.querySelectorAll('.gslide-title');
     var isPortraitMobile=window.matchMedia&&window.matchMedia('(max-width: 767px) and (orientation: portrait)').matches;
-    if(!isPortraitMobile){resetGlightboxTitleMobilePortrait(descs);return;}
-    descs.forEach(function(d){if(d.classList)d.classList.remove('ms-title-ready');});
+    if(!isPortraitMobile){resetGlightboxTitleMobilePortrait(titles);return;}
+    titles.forEach(function(t){if(t.classList)t.classList.remove('ms-title-ready');});
   }catch(e){}
 }
 
@@ -46,15 +56,14 @@ function alignGlightboxTitleMobilePortrait(reveal){
   try{
     var lb=document.querySelector('.glightbox-container');
     if(!lb)return;
-    var descs=lb.querySelectorAll('.gslide-description.description-bottom');
-    var isPortraitMobile=window.matchMedia&&window.matchMedia('(max-width: 767px) and (orientation: portrait)').matches;
-    if(!isPortraitMobile){resetGlightboxTitleMobilePortrait(descs);return;}
-
     var slide=lb.querySelector('.gslide.current');
     if(!slide)return;
     var img=slide.querySelector('.gslide-image img');
-    var desc=slide.querySelector('.gslide-description.description-bottom');
-    if(!img||!desc)return;
+    var title=slide.querySelector('.gslide-title');
+    if(!img||!title)return;
+
+    var isPortraitMobile=window.matchMedia&&window.matchMedia('(max-width: 767px) and (orientation: portrait)').matches;
+    if(!isPortraitMobile){resetGlightboxTitleMobilePortrait([title]);return;}
 
     var imgRect=img.getBoundingClientRect();
     if(!imgRect.width||!imgRect.height)return;
@@ -64,39 +73,41 @@ function alignGlightboxTitleMobilePortrait(reveal){
        layout viewport. getBoundingClientRect() already reports positions in
        CSS pixels of the visual viewport, so no scale math is needed — but
        fixed positioning is anchored to the layout viewport. We compensate by
-       adding visualViewport.offsetTop (the scroll offset of the visual
-       viewport within the layout viewport). */
+       adding visualViewport.offsetTop/offsetLeft. */
     var vvOffsetTop = (window.visualViewport ? window.visualViewport.offsetTop : 0);
     var vvOffsetLeft = (window.visualViewport ? window.visualViewport.offsetLeft : 0);
 
-    descs.forEach(function(d){if(d!==desc)resetGlightboxTitleMobilePortrait([d]);});
-    desc.style.position='fixed';
-    desc.style.left=Math.round(imgRect.left + vvOffsetLeft)+'px';
-    desc.style.right='auto';
-    desc.style.top=Math.round(imgRect.bottom + vvOffsetTop)+'px';
-    desc.style.bottom='auto';
-    desc.style.transform='none';
-    desc.style.width=Math.round(imgRect.width)+'px';
-    desc.style.maxWidth='calc(100vw - 32px)';
-    desc.style.margin='0';
-    desc.style.boxSizing='border-box';
-    desc.style.zIndex='99999';
-    desc.style.display='block';
-    desc.style.visibility='visible';
-    desc.style.opacity='1';
-    if(reveal!==false&&desc.classList)desc.classList.add('ms-title-ready');
+    title.style.position='fixed';
+    title.style.left=Math.round(imgRect.left + vvOffsetLeft)+'px';
+    title.style.right='auto';
+    title.style.top=Math.round(imgRect.bottom + vvOffsetTop)+'px';
+    title.style.bottom='auto';
+    title.style.transform='none';
+    title.style.width=Math.round(imgRect.width)+'px';
+    title.style.maxWidth='calc(100vw - 2px)';
+    title.style.margin='0';
+    title.style.boxSizing='border-box';
+    title.style.zIndex='99999';
+    title.style.display='block';
+    title.style.opacity='1';
+    if(reveal!==false&&title.classList)title.classList.add('ms-title-ready');
   }catch(e){}
 }
 
 function scheduleGlightboxTitleMobilePortrait(){
   prepareGlightboxTitleMobilePortrait();
   if(window.requestAnimationFrame){
-    requestAnimationFrame(function(){alignGlightboxTitleMobilePortrait(false);});
-    requestAnimationFrame(function(){requestAnimationFrame(function(){alignGlightboxTitleMobilePortrait(true);});});
+    requestAnimationFrame(function(){
+      alignGlightboxTitleMobilePortrait(false);
+    });
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        alignGlightboxTitleMobilePortrait(true);
+      });
+    });
   }else{
     alignGlightboxTitleMobilePortrait(true);
   }
-  [80,180,320,520,760].forEach(function(ms){setTimeout(function(){alignGlightboxTitleMobilePortrait(true);},ms);});
 }
 
 /* Re-align title when user pinch-zooms (visualViewport resize) or pans (scroll).
@@ -326,6 +337,44 @@ function initGlightbox(){
   if(typeof GLightbox==='undefined')return;
   if(glightboxInst){try{glightboxInst.destroy();}catch(e){}}
   glightboxInst=GLightbox({selector:'.glb-links a',touchNavigation:true,loop:true,autoplayVideos:false,skin:'clean'});
+  
+  /* Setup mobile close handlers for main glightbox */
+  glightboxInst.on('open', function(){
+    attachVisualViewportListener();
+    setTimeout(function(){
+      var lb = document.querySelector('.glightbox-container');
+      if(!lb) return;
+      
+      /* Close on overlay/outside tap */
+      var overlay = lb.querySelector('.goverlay');
+      if(overlay && !overlay._msCloseAttached){
+        overlay._msCloseAttached = true;
+        overlay.addEventListener('touchend', function(ev){
+          if(ev.target === overlay){
+            ev.preventDefault();
+            glightboxInst.close();
+          }
+        }, {passive:false});
+      }
+      
+      /* Close on X button tap */
+      var closeBtn = lb.querySelector('.gclose');
+      if(closeBtn && !closeBtn._msCloseAttached){
+        closeBtn._msCloseAttached = true;
+        closeBtn.addEventListener('touchend', function(ev){
+          ev.preventDefault();
+          glightboxInst.close();
+        }, {passive:false});
+      }
+      
+      scheduleGlightboxTitleMobilePortrait();
+    }, 30);
+    scheduleGlightboxTitleMobilePortrait();
+  });
+  
+  glightboxInst.on('slide_changed', function(){
+    scheduleGlightboxTitleMobilePortrait();
+  });
 }
 
 /* ── Detail modal buttons ── */
