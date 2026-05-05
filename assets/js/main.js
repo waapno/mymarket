@@ -257,7 +257,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   document.addEventListener('click', function(e) {
     try {
-      var link = e.target.closest('#navbar .nav-link');
+      var link = e.target.closest('.nav-link');
       if (!link) return;
       var hash = link.getAttribute('href');
       if (!hash || hash.charAt(0) !== '#') return;
