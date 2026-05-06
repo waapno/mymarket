@@ -96,8 +96,9 @@ var SHOP_CONFIG = {
   CURRENCY:   'USD',
 };
 
-var allProducts = [], allBundles = [], tagColors = {};
+var allProducts = [], allBundles = [], allServices = [], tagColors = {};
 var activeFilter = 'all', activeSort = 'newest', searchQuery = '';
+var currentVariant = null; /* Track selected variant in detail modal */
 var glightboxInst = null;
 
 /* ── Particles ── */
@@ -127,10 +128,10 @@ function loadShop(){
   .then(function(r){return r.json();})
   .then(function(data){
     var rec=data.record||{};
-    allProducts=rec.products||[];allBundles=rec.bundles||[];tagColors=rec.tag_colors||{};
+    allProducts=rec.products||[];allBundles=rec.bundles||[];allServices=rec.services||[];tagColors=rec.tag_colors||{};
     updateStats();buildFilters();renderProducts();updateSeoLD();
   })
-  .catch(function(){allProducts=[];allBundles=[];tagColors={};renderProducts();});
+  .catch(function(){allProducts=[];allBundles=[];allServices=[];tagColors={};renderProducts();});
 }
 
 function updateStats(){
@@ -149,7 +150,9 @@ function renderTag(name){return'<span class="tag tag-default" '+tagStyle(name)+'
 function buildFilters(){
   var bar=document.getElementById('filters-bar');if(!bar)return;
   bar.querySelectorAll('.filter-btn:not([data-filter="all"])').forEach(function(b){b.remove();});
-  var tags={};allProducts.forEach(function(p){(p.tags||[]).forEach(function(t){tags[t]=1;});});
+  var tags={};
+  allProducts.forEach(function(p){(p.tags||[]).forEach(function(t){tags[t]=1;});});
+  allServices.forEach(function(s){(s.tags||[]).forEach(function(t){tags[t]=1;});});
   var sel=document.getElementById('sort-select');
   Object.keys(tags).sort().forEach(function(tag){
     var b=document.createElement('button');b.className='filter-btn';b.setAttribute('data-filter',tag);
@@ -164,10 +167,10 @@ function buildFilters(){
 }
 
 function getVisible(){
-  var maps=allProducts.slice(),bundles=allBundles.slice();
-  if(activeFilter!=='all'){maps=maps.filter(function(p){return(p.tags||[]).indexOf(activeFilter)!==-1;});bundles=[];}
-  if(searchQuery){var q=searchQuery.toLowerCase();maps=maps.filter(function(p){return(p.title||'').toLowerCase().indexOf(q)!==-1||(p.description||'').replace(/<[^>]+>/g,'').toLowerCase().indexOf(q)!==-1;});bundles=bundles.filter(function(b){return(b.title||'').toLowerCase().indexOf(q)!==-1;});}
-  var all=maps.concat(bundles.map(function(b){return Object.assign({},b,{_isBundle:true});}));
+  var maps=allProducts.slice(),bundles=allBundles.slice(),services=allServices.slice();
+  if(activeFilter!=='all'){maps=maps.filter(function(p){return(p.tags||[]).indexOf(activeFilter)!==-1;});bundles=[];services=[];}
+  if(searchQuery){var q=searchQuery.toLowerCase();maps=maps.filter(function(p){return(p.title||'').toLowerCase().indexOf(q)!==-1||(p.description||'').replace(/<[^>]+>/g,'').toLowerCase().indexOf(q)!==-1;});bundles=bundles.filter(function(b){return(b.title||'').toLowerCase().indexOf(q)!==-1;});services=services.filter(function(s){return(s.title||'').toLowerCase().indexOf(q)!==-1||(s.description||'').replace(/<[^>]+>/g,'').toLowerCase().indexOf(q)!==-1;});}
+  var all=maps.concat(bundles.map(function(b){return Object.assign({},b,{_isBundle:true});})).concat(services.map(function(s){return Object.assign({},s,{_isService:true});}));
   all.sort(function(a,b){
     if(activeSort==='newest')return new Date(b.created_at||0)-new Date(a.created_at||0);
     if(activeSort==='oldest')return new Date(a.created_at||0)-new Date(b.created_at||0);
@@ -196,20 +199,22 @@ function renderProducts(){
   var grid=document.getElementById('products-grid');if(!grid)return;
   grid.innerHTML='';
   var visible=getVisible();
-  if(!visible.length){grid.innerHTML='<div class="empty-state"><span class="empty-icon">🗺</span><h3>No maps found</h3><p>Try a different filter or search term.</p></div>';return;}
+  if(!visible.length){grid.innerHTML='<div class="empty-state"><span class="empty-icon">🗺</span><h3>No items found</h3><p>Try a different filter or search term.</p></div>';return;}
 
   visible.forEach(function(p,idx){
     var isBundle=!!p._isBundle;
+    var isService=!!p._isService;
     var images=p.images&&p.images.length?p.images:[];
     var thumb=images[0]||'';
     var pid=String(p.id||idx);
 
     var card=document.createElement('div');
-    card.className='product-card'+(p.featured?' featured':'')+(isBundle?' bundle-card':'');
+    card.className='product-card'+(p.featured?' featured':'')+(isBundle?' bundle-card':'')+(isService?' service-card':'');
     card.style.opacity='0';card.style.transform='translateY(14px)';
 
-    if(p.featured&&!isBundle)card.innerHTML+='<div class="featured-badge"><i class="bi bi-star-fill"></i> Featured</div>';
+    if(p.featured&&!isBundle&&!isService)card.innerHTML+='<div class="featured-badge"><i class="bi bi-star-fill"></i> Featured</div>';
     if(isBundle)card.innerHTML+='<div class="bundle-badge"><i class="bi bi-gift-fill"></i> Bundle</div>';
+    if(isService)card.innerHTML+='<div class="service-badge"><i class="bi bi-wrench-adjustable-circle-fill"></i> Service</div>';
 
     var inner=document.createElement('div');
     inner.className='product-card-inner';
@@ -218,7 +223,7 @@ function renderProducts(){
     var galleryHtml='<div class="card-gallery">';
     if(isBundle){galleryHtml+=buildBundleCover(p);}
     else if(thumb){galleryHtml+='<img src="'+esc(thumb)+'" alt="'+esc(p.title||'')+'" loading="lazy" decoding="async">';}
-    else{galleryHtml+='<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:48px;opacity:.2">🗺</div>';}
+    else{galleryHtml+='<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:48px;opacity:.2">'+(isService?'⚙':'🗺')+'</div>';}
     if(images.length>1)galleryHtml+='<div class="img-count"><i class="bi bi-images"></i>'+images.length+'</div>';
 
     /* Hidden GLightbox anchors */
@@ -262,28 +267,55 @@ function renderProducts(){
       '</div>';
     }
 
+    /* Service variants indicator */
+    var serviceDescHtml='';
+    if(isService){
+      var sDesc=(p.description||'').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim().slice(0,160);
+      if(sDesc)serviceDescHtml='<div class="card-desc">'+esc(sDesc)+'</div>';
+      if(p.variants&&p.variants.length>1){
+        serviceDescHtml+='<div class="service-variants-info" style="display:flex;align-items:center;gap:6px;padding:8px 12px;background:rgba(168,85,247,.06);border:1px solid rgba(168,85,247,.25);border-radius:var(--r);font-family:var(--fu);font-size:12px;color:var(--violet);margin-top:4px"><i class="bi bi-diagram-3-fill"></i> '+p.variants.length+' versions available</div>';
+      }
+    }
+
     /* Price */
     var priceHtml='';
     if(isBundle){
       var orig=calcBundleOrig(p);
       var final=parseFloat(p.price||0)||(orig*(1-(p.bundle_discount||0)/100));
       priceHtml='<div class="card-price"><span class="price-label">Bundle</span>'+(orig>0?'<span class="price-original">'+orig.toFixed(2)+'</span><span class="price-discount">-'+(p.bundle_discount||0)+'%</span>':'')+'<span class="price-value">'+(final>0?final.toFixed(2)+'<span class="price-currency">'+esc(SHOP_CONFIG.CURRENCY)+'</span>':'<span style=\'color:var(--cyan)\'>Free</span>')+'</span></div>';
+    }else if(isService&&p.variants&&p.variants.length){
+      var minPrice=Math.min.apply(null,p.variants.map(function(v){return parseFloat(v.price||0);}));
+      var maxPrice=Math.max.apply(null,p.variants.map(function(v){return parseFloat(v.price||0);}));
+      var hasZero=p.variants.some(function(v){return parseFloat(v.price||0)===0;});
+      if(minPrice===maxPrice){
+        if(minPrice===0){
+          priceHtml='<div class="card-price"><span class="price-label">Service</span><span class="price-value" style="color:var(--gold);font-size:13px">Custom Quote</span></div>';
+        }else{
+          priceHtml='<div class="card-price"><span class="price-label">Service</span><span class="price-value">'+minPrice.toFixed(2)+'<span class="price-currency">'+esc(SHOP_CONFIG.CURRENCY)+'</span></span></div>';
+        }
+      }else{
+        if(hasZero){
+          priceHtml='<div class="card-price"><span class="price-label">Service</span><span class="price-value">'+minPrice.toFixed(2)+' - '+maxPrice.toFixed(2)+'<span class="price-currency">'+esc(SHOP_CONFIG.CURRENCY)+'</span></span></div>';
+        }else{
+          priceHtml='<div class="card-price"><span class="price-label">Service</span><span class="price-value">'+minPrice.toFixed(2)+' - '+maxPrice.toFixed(2)+'<span class="price-currency">'+esc(SHOP_CONFIG.CURRENCY)+'</span></span></div>';
+        }
+      }
     }else{
       var pval=parseFloat(p.price||0);
-      priceHtml='<div class="card-price"><span class="price-label">Price</span><span class="price-value">'+(pval>0?esc(String(p.price))+'<span class="price-currency">'+esc(SHOP_CONFIG.CURRENCY)+'</span>':'<span style=\'color:var(--cyan)\'>Free</span>')+'</span></div>';
+      priceHtml='<div class="card-price"><span class="price-label">'+(isService?'Service':'Price')+'</span><span class="price-value">'+(pval>0?esc(String(p.price))+'<span class="price-currency">'+esc(SHOP_CONFIG.CURRENCY)+'</span>':(isService?'<span style="color:var(--gold);font-size:13px">Custom Quote</span>':'<span style=\'color:var(--cyan)\'>Free</span>'))+'</span></div>';
     }
 
     var ppid=p.paypal_id;
     var buyBtn=ppid?'<a href="https://www.paypal.com/ncp/payment/'+esc(ppid)+'" target="_blank" rel="noopener" class="btn-buy"><i class="bi bi-bag-check-fill"></i> Buy Now</a>':'';
     var hasFull=!!(p.full_description&&p.full_description.trim()&&p.full_description!=='<p><br></p>');
-    var detBtn=(hasFull||images.length>0)
-      ?'<button class="btn-details" data-pid="'+esc(pid)+'" data-bundle="'+(isBundle?'1':'0')+'"><i class="bi bi-eye-fill"></i> Details</button>':'';
+    var detBtn=(hasFull||images.length>0||(isService&&p.variants&&p.variants.length))
+      ?'<button class="btn-details" data-pid="'+esc(pid)+'" data-bundle="'+(isBundle?'1':'0')+'" data-service="'+(isService?'1':'0')+'"><i class="bi bi-eye-fill"></i> Details</button>':'';
 
     inner.innerHTML=galleryHtml+
       '<div class="card-body">'+
         '<div class="card-tags">'+tagsHtml+'</div>'+
         '<div class="card-title">'+esc(p.title||'Untitled')+'</div>'+
-        (isBundle?bundleDescHtml:'<div class="card-desc">'+shortText+'</div>')+
+        (isBundle?bundleDescHtml:(isService?serviceDescHtml:'<div class="card-desc">'+shortText+'</div>'))+
         '<div class="card-meta">'+priceHtml+'<div class="card-actions">'+buyBtn+detBtn+'</div></div>'+
       '</div>';
 
@@ -311,9 +343,12 @@ function initGlightbox(){
 function initDetailBtns(){
   document.querySelectorAll('.btn-details').forEach(function(btn){
     btn.addEventListener('click',function(){
-      var pid=btn.getAttribute('data-pid'),isBundle=btn.getAttribute('data-bundle')==='1';
-      var p=isBundle?allBundles.find(function(b){return String(b.id)===pid;}):allProducts.find(function(x){return String(x.id)===pid;});
-      if(p)openDetailModal(p,isBundle);
+      var pid=btn.getAttribute('data-pid'),isBundle=btn.getAttribute('data-bundle')==='1',isService=btn.getAttribute('data-service')==='1';
+      var p;
+      if(isService){p=allServices.find(function(s){return String(s.id)===pid;});}
+      else if(isBundle){p=allBundles.find(function(b){return String(b.id)===pid;});}
+      else{p=allProducts.find(function(x){return String(x.id)===pid;});}
+      if(p)openDetailModal(p,isBundle,isService);
     });
   });
 }
@@ -325,12 +360,13 @@ var detailSlideImages=[];
 var detailDragStartX=0,detailDragging=false,detailCurrentTranslate=0,detailPrevTranslate=0;
 var detailPrevIdx=-1; /* Track previous index for seamless loop detection */
 
-function openDetailModal(p,isBundle){
+function openDetailModal(p,isBundle,isService){
   var overlay=document.getElementById('detail-overlay');
   var images=p.images||[];
   detailSlideImages=images;
   detailSlideIdx=0;
   detailPrevIdx=-1; /* Reset for clean slate */
+  currentVariant=null; /* Reset variant selection */
 
   /* Tags */
   document.getElementById('detail-tags').innerHTML=(p.tags||[]).map(function(t){return renderTag(t);}).join('');
@@ -338,26 +374,58 @@ function openDetailModal(p,isBundle){
   /* Title */
   document.getElementById('detail-title').textContent=p.title||'';
 
+  /* Variant selector for services */
+  var variantSelEl=document.getElementById('variant-selector');
+  if(isService&&p.variants&&p.variants.length>1){
+    variantSelEl.style.display='flex';
+    variantSelEl.innerHTML='';
+    variantSelEl.className='variant-selector';
+    p.variants.forEach(function(v,idx){
+      var btn=document.createElement('button');
+      btn.className='variant-btn'+(idx===0?' active':'');
+      btn.textContent=v.name||'Version '+(idx+1);
+      btn.setAttribute('data-variant-idx',idx);
+      btn.addEventListener('click',function(){
+        document.querySelectorAll('.variant-btn').forEach(function(b){b.classList.remove('active');});
+        btn.classList.add('active');
+        currentVariant=idx;
+        updateDetailPrice(p,isService);
+      });
+      variantSelEl.appendChild(btn);
+    });
+    if(p.variants.length>0)currentVariant=0; /* Default to first variant */
+  }else{
+    variantSelEl.style.display='none';
+  }
+
   /* Badges */
-  var pval=parseFloat(p.price||0);
+  var selectedVariant=isService&&currentVariant!==null?p.variants[currentVariant]:null;
+  var pval=selectedVariant?parseFloat(selectedVariant.price||0):parseFloat(p.price||0);
   var badgesEl=document.getElementById('detail-badges');
   var bdg='';
-  if(pval>0)bdg+='<span class="detail-badge-price">'+esc(String(p.price))+' '+esc(SHOP_CONFIG.CURRENCY)+'</span>';
-  else bdg+='<span class="detail-badge-price" style="color:var(--cyan)">Free</span>';
-  if(p.featured)bdg+='<span style="color:var(--gold);font-family:var(--fp);font-size:8px;display:inline-flex;align-items:center;gap:4px"><i class="bi bi-star-fill"></i> Featured</span>';
+  if(isService&&pval===0){
+    bdg+='<span class="detail-badge-price" style="color:var(--gold)">Custom Quote</span>';
+  }else if(pval>0){
+    bdg+='<span class="detail-badge-price">'+pval.toFixed(2)+' '+esc(SHOP_CONFIG.CURRENCY)+'</span>';
+  }else{
+    bdg+='<span class="detail-badge-price" style="color:var(--cyan)">Free</span>';
+  }
+  if(p.featured&&!isService)bdg+='<span style="color:var(--gold);font-family:var(--fp);font-size:8px;display:inline-flex;align-items:center;gap:4px"><i class="bi bi-star-fill"></i> Featured</span>';
   if(isBundle&&p.bundle_discount)bdg+='<span style="color:var(--red);font-family:var(--fu);font-size:14px;font-weight:700">-'+p.bundle_discount+'% Bundle</span>';
+  if(isService&&p.variants&&p.variants.length>1)bdg+='<span style="color:var(--violet);font-family:var(--fu);font-size:11px;display:inline-flex;align-items:center;gap:4px"><i class="bi bi-diagram-3-fill"></i> '+p.variants.length+' versions</span>';
   badgesEl.innerHTML=bdg;
 
   /* Description */
   var descEl=document.getElementById('detail-desc');
-  var fullDesc=p.full_description||'';
+  var fullDesc=selectedVariant&&selectedVariant.full_description?selectedVariant.full_description:p.full_description||'';
   var hasFull=fullDesc.trim()&&fullDesc!=='<p><br></p>';
   descEl.innerHTML=hasFull?fullDesc:(p.description||'<em style="color:var(--muted)">No description.</em>');
 
   /* Footer */
   var footerEl=document.getElementById('detail-footer');
   footerEl.innerHTML='';
-  if(p.paypal_id){footerEl.innerHTML+='<a href="https://www.paypal.com/ncp/payment/'+esc(p.paypal_id)+'" target="_blank" rel="noopener" class="btn-buy"><i class="bi bi-bag-check-fill"></i> Buy Now'+(pval>0?' — '+esc(String(p.price))+' '+esc(SHOP_CONFIG.CURRENCY):' — Free')+'</a>';}
+  var ppid=selectedVariant?selectedVariant.paypal_id:p.paypal_id;
+  if(ppid){footerEl.innerHTML+='<a href="https://www.paypal.com/ncp/payment/'+esc(ppid)+'" target="_blank" rel="noopener" class="btn-buy"><i class="bi bi-bag-check-fill"></i> Buy Now'+(pval>0?' — '+pval.toFixed(2)+' '+esc(SHOP_CONFIG.CURRENCY):' — Free')+'</a>';}
   if(images.length>1)footerEl.innerHTML+='<span style="color:var(--muted);font-family:var(--fu);font-size:12px"><i class="bi bi-images"></i> '+images.length+' images · swipe or use arrows</span>';
 
   /* Build slideshow gallery */
@@ -366,6 +434,32 @@ function openDetailModal(p,isBundle){
   overlay.classList.add('open');
   document.body.style.overflow='hidden';
   attachDetailKeyboard();
+}
+
+function updateDetailPrice(p,isService){
+  if(!isService||currentVariant===null)return;
+  var v=p.variants[currentVariant];if(!v)return;
+  var pval=parseFloat(v.price||0);
+  var badgesEl=document.getElementById('detail-badges');
+  var bdg='';
+  if(pval===0){
+    bdg+='<span class="detail-badge-price" style="color:var(--gold)">Custom Quote</span>';
+  }else{
+    bdg+='<span class="detail-badge-price">'+pval.toFixed(2)+' '+esc(SHOP_CONFIG.CURRENCY)+'</span>';
+  }
+  if(p.variants&&p.variants.length>1)bdg+='<span style="color:var(--violet);font-family:var(--fu);font-size:11px;display:inline-flex;align-items:center;gap:4px"><i class="bi bi-diagram-3-fill"></i> '+p.variants.length+' versions</span>';
+  badgesEl.innerHTML=bdg;
+  var descEl=document.getElementById('detail-desc');
+  var fullDesc=v.full_description||'';
+  var hasFull=fullDesc.trim()&&fullDesc!=='<p><br></p>';
+  descEl.innerHTML=hasFull?fullDesc:(p.description||'<em style="color:var(--muted)">No description.</em>');
+  var footerEl=document.getElementById('detail-footer');
+  footerEl.innerHTML='';
+  var ppid=v.paypal_id;
+  if(ppid){
+    var btnText=pval>0?' — '+pval.toFixed(2)+' '+esc(SHOP_CONFIG.CURRENCY):' — Custom Quote';
+    footerEl.innerHTML+='<a href="https://www.paypal.com/ncp/payment/'+esc(ppid)+'" target="_blank" rel="noopener" class="btn-buy"><i class="bi bi-bag-check-fill"></i> Buy Now'+btnText+'</a>';
+  }
 }
 
 var detailGlightbox = null;

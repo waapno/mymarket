@@ -6,7 +6,7 @@
 :root {
   --bg:#06090a; --bg-panel:rgba(6,14,10,.94); --bg-card:rgba(8,20,13,.92);
   --green:#00ff7f; --green-mid:#00cc5a; --green-dim:#003d1a;
-  --cyan:#00e5ff; --gold:#ffd06e; --red:#ff4560;
+  --cyan:#00e5ff; --gold:#ffd06e; --red:#ff4560; --violet:#a855f7;
   --text:#dff2e8; --muted:rgba(180,230,200,.5); --border:rgba(0,255,127,.18);
   --sg:0 0 20px rgba(0,255,127,.25),0 0 60px rgba(0,255,127,.08);
   --fp:'Press Start 2P',monospace; --fu:'Rajdhani',sans-serif; --fb:'Nunito',sans-serif;
@@ -44,8 +44,12 @@ a:hover{color:var(--cyan)}
 #search-input::placeholder{color:var(--muted)}
 #search-input:focus{border-color:rgba(0,255,127,.45);box-shadow:0 0 0 3px rgba(0,255,127,.08)}
 .header-right{display:flex;align-items:center;gap:10px;margin-left:auto;flex-shrink:0}
-.btn-admin{display:flex;align-items:center;gap:6px;padding:7px 16px;background:rgba(0,255,127,.07);border:1px solid var(--border);border-radius:20px;color:var(--muted);font-family:var(--fu);font-size:13px;font-weight:600;transition:all .2s}
-.btn-admin:hover{border-color:var(--green);color:var(--green);background:rgba(0,255,127,.12)}
+.btn-portfolio{display:flex;align-items:center;gap:7px;padding:7px 18px;background:rgba(0,255,127,.07);border:1px solid var(--border);border-radius:20px;color:var(--muted);font-family:var(--fu);font-size:13px;font-weight:600;transition:all .2s;text-decoration:none}
+.btn-portfolio i{font-size:16px;color:var(--green)}
+.btn-portfolio:hover{border-color:var(--green);color:var(--green);background:rgba(0,255,127,.12)}
+/* Tiny discrete admin link — visible but unobtrusive */
+.btn-admin-hidden{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(0,255,127,.04);border:1px solid rgba(0,255,127,.1);color:rgba(0,255,127,.25);font-size:13px;transition:all .25s;text-decoration:none}
+.btn-admin-hidden:hover{background:rgba(0,255,127,.1);border-color:rgba(0,255,127,.3);color:var(--green)}
 
 /* ── HERO ── */
 .hero{position:relative;padding:72px 24px 56px;text-align:center;overflow:hidden;max-width:1280px;margin:0 auto}
@@ -83,6 +87,8 @@ a:hover{color:var(--cyan)}
 .product-card.featured:hover{border-color:rgba(255,208,110,.6);box-shadow:0 0 20px rgba(255,208,110,.22),0 16px 40px rgba(0,0,0,.6)}
 .product-card.bundle-card{border-color:rgba(0,229,255,.25)}
 .product-card.bundle-card::before{background:linear-gradient(90deg,transparent,var(--cyan),transparent);opacity:.5}
+.product-card.service-card{border-color:rgba(168,85,247,.25)}
+.product-card.service-card::before{background:linear-gradient(90deg,transparent,var(--violet),transparent);opacity:.45}
 
 /* ── FEATURED BADGE ── */
 .featured-badge{position:absolute;top:-10px;left:16px;z-index:5;display:inline-flex;align-items:center;gap:5px;background:linear-gradient(135deg,var(--gold),#ffb830);color:#1a1000;font-family:var(--fp);font-size:6.5px;letter-spacing:.8px;padding:5px 11px;border-radius:3px;text-transform:uppercase;font-weight:700;box-shadow:0 0 14px rgba(255,208,110,.6),0 0 30px rgba(255,208,110,.3);animation:featBadgePulse 2.8s ease-in-out infinite}
@@ -92,6 +98,10 @@ a:hover{color:var(--cyan)}
 @keyframes featStar{0%{opacity:0;transform:translateY(0) scale(.5)}20%{opacity:1;transform:translateY(-8px) scale(1)}60%{opacity:.3;transform:translateY(-18px) scale(.7)}100%{opacity:0;transform:translateY(-26px) scale(.3)}}
 .bundle-badge{position:absolute;top:-10px;left:16px;z-index:5;display:inline-flex;align-items:center;gap:5px;background:linear-gradient(135deg,var(--cyan),#0095c8);color:#001a2a;font-family:var(--fp);font-size:6.5px;letter-spacing:.8px;padding:5px 11px;border-radius:3px;text-transform:uppercase;font-weight:700;box-shadow:0 0 14px rgba(0,229,255,.5)}
 .bundle-badge i{font-size:10px;color:#001a2a;line-height:1}
+
+/* ── SERVICE BADGE ── */
+.service-badge{position:absolute;top:-10px;left:16px;z-index:5;display:inline-flex;align-items:center;gap:5px;background:linear-gradient(135deg,var(--violet),#8b5cf6);color:#f3e8ff;font-family:var(--fp);font-size:6.5px;letter-spacing:.8px;padding:5px 11px;border-radius:3px;text-transform:uppercase;font-weight:700;box-shadow:0 0 14px rgba(168,85,247,.5)}
+.service-badge i{font-size:10px;color:#f3e8ff;line-height:1}
 
 /* ── CARD GALLERY (no trigger overlay) ── */
 .card-gallery{position:relative;aspect-ratio:16/9;overflow:hidden;background:rgba(0,20,10,.5);flex-shrink:0}
@@ -154,6 +164,19 @@ a:hover{color:var(--cyan)}
   font-family:var(--fp);font-size:9px;
   color:var(--green);opacity:.8;
 }
+
+/* ── Service Variants Info ── */
+.service-variants-info{
+  display:flex;align-items:center;gap:6px;
+  padding:8px 12px;
+  background:rgba(168,85,247,.06);border:1px solid rgba(168,85,247,.25);
+  border-radius:var(--r);
+  font-family:var(--fu);font-size:12px;
+  color:var(--violet);
+  margin-top:4px;
+  transition:all .2s;
+}
+.service-variants-info i{font-size:13px}
 
 .card-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;padding-top:10px;border-top:1px solid rgba(0,255,127,.08)}
 .card-price{display:flex;flex-direction:column;gap:1px}
@@ -344,10 +367,17 @@ a:hover{color:var(--cyan)}
 /* ── Detail body ── */
 .detail-body{padding:22px 26px 26px}
 .detail-header{margin-bottom:14px}
+.detail-title-row{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap}
 .detail-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px}
 .detail-title{font-family:var(--fu);font-size:clamp(20px,3vw,28px);font-weight:700;color:#fff;margin-bottom:8px;line-height:1.2}
 .detail-badges{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:6px}
 .detail-badge-price{font-family:var(--fp);font-size:16px;color:var(--green);text-shadow:0 0 10px rgba(0,255,127,.35)}
+
+/* ── Variant Selector ── */
+.variant-selector{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:10px 0}
+.variant-btn{padding:8px 16px;background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.25);border-radius:20px;color:var(--muted);font-family:var(--fu);font-size:12px;font-weight:700;cursor:pointer;transition:all .22s;text-transform:uppercase;letter-spacing:.5px}
+.variant-btn:hover{border-color:var(--violet);color:var(--violet);background:rgba(168,85,247,.15)}
+.variant-btn.active{background:var(--violet);border-color:var(--violet);color:#f3e8ff;box-shadow:0 0 12px rgba(168,85,247,.5)}
 
 /* Quill read-only */
 .detail-desc.ql-editor{padding:0;font-family:var(--fb);font-size:15px;line-height:1.75;color:var(--text);border:none;background:transparent;margin:16px 0 22px;min-height:20px}
@@ -487,3 +517,144 @@ a:hover{color:var(--cyan)}
 ::-webkit-scrollbar-track{background:var(--bg)}
 ::-webkit-scrollbar-thumb{background:var(--green-dim);border-radius:3px}
 ::-webkit-scrollbar-thumb:hover{background:var(--green-mid)}
+
+/* ============================================================
+   SERVICE CARD — violet accent, distinct from maps/bundles
+   ============================================================ */
+.product-card.service-card{
+  border-color:rgba(168,85,247,.22);
+  background:linear-gradient(160deg,rgba(168,85,247,.05) 0%,var(--bg-card) 60%);
+}
+.product-card.service-card::before{
+  background:linear-gradient(90deg,transparent,var(--violet),transparent);opacity:.5;
+}
+.product-card.service-card:hover{
+  border-color:rgba(168,85,247,.55);
+  box-shadow:0 0 24px rgba(168,85,247,.18),0 16px 40px rgba(0,0,0,.6);
+}
+.product-card.service-card:hover::before{opacity:1}
+.product-card.service-card .card-title{color:#e9d5ff}
+
+/* Service badge */
+.service-badge{
+  position:absolute;top:-10px;left:16px;z-index:5;
+  display:inline-flex;align-items:center;gap:5px;
+  background:linear-gradient(135deg,#a855f7,#7c3aed);
+  color:#fff;font-family:var(--fp);font-size:6.5px;letter-spacing:.8px;
+  padding:5px 11px;border-radius:3px;text-transform:uppercase;font-weight:700;
+  box-shadow:0 0 14px rgba(168,85,247,.55),0 2px 8px rgba(0,0,0,.4);
+  animation:svcBadgePulse 3s ease-in-out infinite;
+}
+.service-badge i{font-size:10px;color:#fff;line-height:1}
+@keyframes svcBadgePulse{
+  0%,100%{box-shadow:0 0 10px rgba(168,85,247,.5),0 0 24px rgba(168,85,247,.2)}
+  50%    {box-shadow:0 0 20px rgba(168,85,247,.85),0 0 46px rgba(168,85,247,.4)}
+}
+
+/* Service card gallery tint */
+.product-card.service-card .card-gallery::after{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(168,85,247,.18) 0%,transparent 60%);
+  pointer-events:none;z-index:1;
+}
+
+/* Service contact CTA block (inside card body) */
+.service-contact-cta{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 14px;margin-top:4px;
+  background:rgba(168,85,247,.08);
+  border:1px solid rgba(168,85,247,.2);
+  border-radius:var(--r);
+  font-family:var(--fu);font-size:13px;color:rgba(233,213,255,.7);
+  transition:background .2s,border-color .2s;
+}
+.service-contact-cta i{color:#a855f7;font-size:18px;flex-shrink:0}
+.service-contact-cta b{color:#e9d5ff}
+
+/* Service detail CTA (inside detail modal) */
+.service-detail-cta{
+  display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+  padding:20px 24px;margin:20px 0 0;
+  background:linear-gradient(135deg,rgba(168,85,247,.1),rgba(124,58,237,.06));
+  border:1px solid rgba(168,85,247,.3);
+  border-radius:var(--r-lg);
+  position:relative;overflow:hidden;
+}
+.service-detail-cta::before{
+  content:"";position:absolute;inset:0;
+  background:radial-gradient(ellipse 60% 80% at 0% 50%,rgba(168,85,247,.15),transparent);
+  pointer-events:none;
+}
+.service-detail-cta-text{flex:1;min-width:0}
+.service-detail-cta-title{
+  font-family:var(--fp);font-size:9px;letter-spacing:1.5px;
+  color:#c4b5fd;text-transform:uppercase;margin-bottom:5px;
+}
+.service-detail-cta-desc{
+  font-family:var(--fu);font-size:14px;color:rgba(233,213,255,.75);line-height:1.5;
+}
+.btn-discord-cta{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:12px 22px;
+  background:linear-gradient(135deg,#5865F2,#7c3aed);
+  color:#fff;font-family:var(--fu);font-size:14px;font-weight:800;
+  border-radius:var(--r);border:none;cursor:pointer;
+  text-decoration:none;flex-shrink:0;
+  box-shadow:0 0 20px rgba(88,101,242,.4),0 4px 14px rgba(0,0,0,.4);
+  transition:transform .2s,box-shadow .2s;
+}
+.btn-discord-cta i{font-size:18px}
+.btn-discord-cta:hover{
+  transform:translateY(-2px);
+  box-shadow:0 0 32px rgba(88,101,242,.65),0 8px 20px rgba(0,0,0,.5);
+  color:#fff;
+}
+
+/* Service price range badge in detail */
+.service-price-range{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:7px 16px;
+  background:rgba(168,85,247,.12);
+  border:1px solid rgba(168,85,247,.35);
+  border-radius:20px;
+  font-family:var(--fp);font-size:10px;letter-spacing:.5px;
+  color:#c4b5fd;
+  box-shadow:0 0 12px rgba(168,85,247,.15);
+}
+.service-price-range i{color:#a855f7;font-size:13px}
+
+/* "Details" button — violet tint for services */
+.btn-details-service{
+  display:inline-flex;align-items:center;gap:7px;padding:10px 18px;
+  background:rgba(168,85,247,.08);
+  border:1px solid rgba(168,85,247,.3);
+  border-radius:var(--r);
+  color:rgba(168,85,247,.9);font-family:var(--fu);font-size:13px;font-weight:700;
+  cursor:pointer;transition:all .2s;flex-shrink:0;
+}
+.btn-details-service:hover{border-color:var(--violet);color:#e9d5ff;background:rgba(168,85,247,.15)}
+
+/* ── VARIANT SELECTOR — inside detail modal ── */
+.detail-title-row{
+  display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:8px;
+}
+.variant-selector{
+  display:flex;gap:6px;flex-wrap:wrap;align-items:center;padding-top:4px;
+}
+.variant-btn{
+  display:inline-flex;flex-direction:column;gap:2px;
+  padding:6px 14px;
+  background:rgba(0,255,127,.06);
+  border:1px solid rgba(0,255,127,.2);
+  border-radius:var(--r);
+  cursor:pointer;transition:all .22s;text-align:left;
+}
+.variant-btn:hover{border-color:rgba(0,255,127,.5);background:rgba(0,255,127,.1)}
+.variant-btn.active{
+  border-color:var(--green);
+  background:rgba(0,255,127,.14);
+  box-shadow:0 0 10px rgba(0,255,127,.2);
+}
+.variant-btn-label{font-family:var(--fu);font-size:13px;font-weight:700;color:var(--text)}
+.variant-btn-price{font-family:var(--fp);font-size:9px;color:var(--green)}
+.variant-btn.active .variant-btn-price{text-shadow:0 0 8px rgba(0,255,127,.5)}
