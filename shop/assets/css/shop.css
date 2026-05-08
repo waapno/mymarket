@@ -69,6 +69,10 @@ a:hover{color:var(--cyan)}
 .filter-btn:hover{border-color:var(--border);color:var(--text);background:rgba(0,255,127,.09)}
 .filter-btn.active{background:var(--green);border-color:var(--green);color:#06090a;box-shadow:0 0 16px rgba(0,255,127,.35)}
 .filter-btn.active i{color:#06090a}
+.filter-btn-services{background:rgba(168,85,247,.08);border-color:rgba(168,85,247,.25);color:var(--muted)}
+.filter-btn-services:hover{border-color:rgba(168,85,247,.5);color:#e9d5ff;background:rgba(168,85,247,.12)}
+.filter-btn-services.active{background:var(--violet);border-color:var(--violet);color:#f3e8ff;box-shadow:0 0 16px rgba(168,85,247,.4)}
+.filter-btn-services.active i{color:#f3e8ff}
 .sort-select{margin-left:auto;background:rgba(0,255,127,.05);border:1px solid var(--border);border-radius:var(--r);color:var(--muted);font-family:var(--fu);font-size:13px;padding:7px 12px;cursor:pointer;outline:none}
 .sort-select option{background:#0d1f13}
 
@@ -658,3 +662,96 @@ a:hover{color:var(--cyan)}
 .variant-btn-label{font-family:var(--fu);font-size:13px;font-weight:700;color:var(--text)}
 .variant-btn-price{font-family:var(--fp);font-size:9px;color:var(--green)}
 .variant-btn.active .variant-btn-price{text-shadow:0 0 8px rgba(0,255,127,.5)}
+
+/* ============================================================
+   VARIANT DROPDOWN — New smooth dropdown selector
+   Displayed below detail-badge-price when variants exist
+   ============================================================ */
+#detail-variant-row{margin:6px 0 0 0;display:flex;align-items:center}
+
+.vs-wrap{position:relative;width:100%;max-width:240px}
+.vs-wrap.vs-wrap-service{max-width:220px}
+
+.vs-trigger{
+  width:100%;
+  display:flex;align-items:center;gap:8px;
+  padding:8px 14px;
+  background:rgba(0,255,127,.06);
+  border:1px solid rgba(0,255,127,.2);
+  border-radius:var(--r);
+  color:var(--muted);
+  font-family:var(--fu);font-size:12px;font-weight:600;
+  cursor:pointer;
+  text-align:left;
+  transition:all .2s;
+  outline:none;
+}
+.vs-trigger:hover{border-color:rgba(0,255,127,.4);background:rgba(0,255,127,.09);color:var(--text)}
+.vs-trigger[aria-expanded="true"]{border-color:rgba(0,255,127,.5);background:rgba(0,255,127,.12)}
+.vs-icon{font-size:14px;color:var(--green);flex-shrink:0}
+.vs-label{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vs-price-tag{font-family:var(--fp);font-size:8px;color:var(--green);letter-spacing:.5px;flex-shrink:0;margin-right:2px}
+.vs-chevron{font-size:14px;color:var(--muted);flex-shrink:0;transition:transform .3s}
+
+.vs-menu{
+  position:absolute;top:100%;left:0;right:0;z-index:1000;
+  display:none;
+  background:var(--bg-panel);
+  border:1px solid rgba(0,255,127,.25);
+  border-top:none;
+  border-radius:0 0 var(--r) var(--r);
+  box-shadow:0 8px 32px rgba(0,0,0,.6);
+  overflow:hidden;
+  max-height:240px;
+  overflow-y:auto;
+  animation:menuSlideDown .2s ease-out;
+}
+.vs-menu.open{display:block}
+@keyframes menuSlideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+
+.vs-item{
+  display:flex;align-items:center;gap:10px;
+  width:100%;
+  padding:10px 14px;
+  background:transparent;
+  border:none;
+  border-bottom:1px solid rgba(0,255,127,.08);
+  color:var(--text);
+  font-family:var(--fu);font-size:12px;font-weight:500;
+  cursor:pointer;
+  text-align:left;
+  transition:background .15s;
+  outline:none;
+}
+.vs-item:last-child{border-bottom:none}
+.vs-item:hover{background:rgba(0,255,127,.08)}
+.vs-item.vs-active{background:rgba(0,255,127,.12);border-bottom-color:rgba(0,255,127,.15)}
+
+.vs-check{
+  font-size:14px;
+  color:var(--green);
+  flex-shrink:0;
+  transition:opacity .2s;
+}
+.vs-item-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.vs-item-name{display:block;font-weight:600;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vs-item-price{display:block;font-family:var(--fp);font-size:8px;color:var(--cyan);letter-spacing:.3px}
+
+.vs-wrap-service .vs-item-price{color:#c4b5fd}
+
+/* Detail variant row transitions */
+#detail-variant-row .vs-wrap{opacity:0;transform:translateY(-10px);animation:variantRowAppear .3s ease-out forwards;animation-delay:.1s}
+@keyframes variantRowAppear{to{opacity:1;transform:translateY(0)}}
+
+.detail-transitioning #detail-variant-row{pointer-events:none}
+.detail-transitioning-light #detail-variant-row{pointer-events:none}
+
+/* Discord contact info (under Discord button) */
+.detail-discord-username{
+  display:flex;align-items:center;gap:6px;
+  font-family:var(--fu);font-size:11px;
+  color:var(--muted);
+  text-align:center;
+  margin-top:8px;
+}
+.detail-discord-username i{color:var(--violet);font-size:12px}
