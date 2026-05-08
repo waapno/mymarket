@@ -563,17 +563,15 @@ a:hover{color:var(--cyan)}
 }
 
 /* Service contact CTA block (inside card body) */
-.service-contact-cta{
-  display:flex;align-items:center;gap:10px;
-  padding:10px 14px;margin-top:4px;
+.service-card-discord{
+  display:flex;align-items:center;gap:8px;
+  padding:8px 12px;margin-top:6px;
   background:rgba(168,85,247,.08);
   border:1px solid rgba(168,85,247,.2);
   border-radius:var(--r);
-  font-family:var(--fu);font-size:13px;color:rgba(233,213,255,.7);
-  transition:background .2s,border-color .2s;
+  font-family:var(--fu);font-size:12px;color:#c4b5fd;
 }
-.service-contact-cta i{color:#a855f7;font-size:18px;flex-shrink:0}
-.service-contact-cta b{color:#e9d5ff}
+.service-card-discord i{color:#a855f7;font-size:14px;flex-shrink:0}
 
 /* Service detail CTA (inside detail modal) */
 .service-detail-cta{
